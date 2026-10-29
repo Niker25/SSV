@@ -76,6 +76,8 @@ namespace vc
 	class _7SegDisp_EventTime;
 	class StandardSingleLight;
 	class StandardDoubleLight;
+	class LockableLever2;
+	class StdSwitch2;
 
 	using namespace discsignals;
 
@@ -105,6 +107,9 @@ namespace vc
 		DiscInPort modeascent;
 		DiscInPort cw_a;
 
+		LockableLever2* pFltCntlrPower;
+		StdSwitch2* pRDRALTM;
+
 	public:
 		explicit PanelF7(Atlantis* _sts);
 		virtual ~PanelF7();
@@ -113,6 +118,40 @@ namespace vc
 		void RegisterVC() override;
 		void Realize() override;
 		void OnPostStep( double simt, double simdt, double mjd ) override;
+		void DefineVCAnimations();
+
+		//OMS Press
+		UINT anim_needle_oms_pc_left = -1, anim_needle_oms_pc_right = -1, anim_needle_oms_he_left = -1, anim_needle_oms_he_right = -1;
+		MGROUP_TRANSFORM* mgr_needle_oms_pc_left = nullptr, *mgr_needle_oms_pc_right = nullptr, *mgr_needle_oms_he_left = nullptr, *mgr_needle_oms_he_right = nullptr;
+
+		//MPS Press
+		UINT anim_needle_mps_pc_L,
+			anim_needle_mps_pc_C = -1,
+			anim_needle_mps_pc_R = -1,
+			anim_needle_mps_LO2 = -1,
+			anim_needle_mps_LH2 = -1,
+			anim_needle_mps_he_PNEU = -1,
+			anim_needle_mps_he_L = -1,
+			anim_needle_mps_he_C = -1,
+			anim_needle_mps_he_R = -1;
+		MGROUP_TRANSFORM* mgr_needle_mps_pc_L = nullptr,
+			* mgr_needle_mps_pc_C = nullptr,
+			* mgr_needle_mps_pc_R = nullptr,
+			* mgr_needle_mps_LO2 = nullptr,
+			* mgr_needle_mps_LH2 = nullptr,
+			* mgr_needle_mps_he_PNEU = nullptr,
+			* mgr_needle_mps_he_L = nullptr,
+			* mgr_needle_mps_he_C = nullptr,
+			* mgr_needle_mps_he_R = nullptr;
+
+		//G-Meter
+		UINT anim_needle_g_meter = -1;
+		MGROUP_TRANSFORM* mgr_needle_g_meter = nullptr;
+
+		//SPI
+		UINT anim_needle_LOB = -1, anim_needle_LIB = -1, anim_needle_RIB = -1, anim_needle_ROB = -1, anim_needle_DAFB = -1, anim_needle_DRFB = -1, anim_needle_DBFOFB = -1, anim_needle_Speedbrake_Pos = -1, anim_needle_Speedbrake_Cmd = -1;
+		MGROUP_TRANSFORM *mgr_needle_LOB = nullptr, * mgr_needle_LIB = nullptr, * mgr_needle_RIB = nullptr, * mgr_needle_ROB = nullptr, * mgr_needle_DAFB = nullptr, * mgr_needle_DRFB = nullptr, * mgr_needle_DBFOFB = nullptr, * mgr_needle_Speedbrake_Pos = nullptr, * mgr_needle_Speedbrake_Cmd = nullptr;
+
 	};
 }
 

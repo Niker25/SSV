@@ -30,7 +30,7 @@ Date         Developer
 
 namespace vc
 {
-	const static char* MESHNAME_PANEL = "SSV\\OV\\panelA12A1";
+	const static char* MESHNAME_PANEL = "SSV\\OV\\panelA12A1_MCD";
 
 
 	PanelA12A1::PanelA12A1( Atlantis *_sts, bool defaultposition ) : AtlantisPanel( _sts, defaultposition ? "R12U" : "R11U" )
@@ -49,8 +49,8 @@ namespace vc
 		AddAIDToMouseEventList( AID_A12A1 );
 
 		pCRT4->DefineVCGroup( GRP_CRT4_A12A1_VC );
-		pCRT4->DefineMaterial( MAT_MDU_CRT4_A12A1_VC );
-		pCRT4->SetMouseRegion( AID_A12A1, 0.036582f, 0.040874f, 0.527693f, 0.963088f );
+		pCRT4->DefineMaterial( 3 );
+		pCRT4->SetMouseRegion( AID_A12A1, 0.016502, 0.046845, 0.570873, 0.910594);
 		return;
 	}
 

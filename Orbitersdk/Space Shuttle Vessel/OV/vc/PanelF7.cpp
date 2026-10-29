@@ -29,6 +29,7 @@ Date         Developer
 #include "../ParameterValues.h"
 #include "vc_defs.h"
 #include "../meshres_vc_f7.h"
+#include "../dps/IDP.h"
 
 
 namespace vc {
@@ -36,7 +37,7 @@ namespace vc {
 	PanelF7::PanelF7(Atlantis* _sts)
 		: AtlantisPanel(_sts, "F7")
 	{
-		DefineMesh( MESHNAME_PANELF7 );
+		DefineMesh( MESHNAME_PANELF7_MCD );
 
 		Add(pCRT1 = new MDU(_sts, "CRT1", MDUID_CRT1));
 		Add(pCRT2 = new MDU(_sts, "CRT2", MDUID_CRT2));
@@ -96,6 +97,15 @@ namespace vc {
 		Add( pMainEngStatus[2] = new StandardDoubleLight( _sts, "MAIN ENGINE STATUS RIGHT" ) );
 
 		Add( pSMAlert = new StandardSingleLight( _sts, "SM ALERT" ) );
+
+		Add(pFltCntlrPower = new LockableLever2(_sts, "FLT CNTLR POWER"));
+		pFltCntlrPower->SetLabel(0, "OFF");
+		pFltCntlrPower->SetLabel(1, "ON");
+
+		Add(pRDRALTM = new StdSwitch2(_sts, "RDR ALTM"));
+		pRDRALTM->SetLabel(0, "2");
+		pRDRALTM->SetLabel(1, "1");
+		pRDRALTM->SetInitialPosition(1);
 	}
 
 	PanelF7::~PanelF7()
@@ -108,23 +118,23 @@ namespace vc {
 
 		pCRT1->DefineVCGroup( GRP_CRT1_F7_VC );
 		pCRT1->DefineMaterial( MAT_MDU_CRT1_F7_VC );
-		pCRT1->SetMouseRegion( AID_F7, 0.0f, 0.0f, 0.324694f, 0.490948f );
+		pCRT1->SetMouseRegion( AID_F7, 0.003304, 0.0, 0.370636, 0.473526);
 
 		pCRT2->DefineVCGroup( GRP_CRT2_F7_VC );
 		pCRT2->DefineMaterial( MAT_MDU_CRT2_F7_VC );
-		pCRT2->SetMouseRegion( AID_F7, 0.675193f, 0.0f, 1.0f, 0.490948f );
+		pCRT2->SetMouseRegion(AID_F7, 0.630505, 0.0, 0.997837, 0.473526);
 
 		pCRT3->DefineVCGroup( GRP_CRT3_F7_VC );
 		pCRT3->DefineMaterial( MAT_MDU_CRT3_F7_VC );
-		pCRT3->SetMouseRegion( AID_F7, 0.337995f, 0.257779f, 0.663350f, 0.750545f );
+		pCRT3->SetMouseRegion( AID_F7, 0.316554, 0.478625, 0.683886, 0.952131);
 
 		pMFD1->DefineVCGroup( GRP_MFD1_F7_VC );
 		pMFD1->DefineMaterial( MAT_MDU_MFD1_F7_VC );
-		pMFD1->SetMouseRegion( AID_F7, 0.0f, 0.510035f, 0.324694f, 1.0f );
+		//pMFD1->SetMouseRegion( AID_F7, 0.0f, 0.510035f, 0.324694f, 1.0f );
 
 		pMFD2->DefineVCGroup( GRP_MFD2_F7_VC );
 		pMFD2->DefineMaterial( MAT_MDU_MFD2_F7_VC );
-		pMFD2->SetMouseRegion( AID_F7, 0.675193f, 0.510035f, 1.0f, 1.0f );
+		//pMFD2->SetMouseRegion( AID_F7, 0.675193f, 0.510035f, 1.0f, 1.0f );
 
 		pEventTime->DefineMesh( GetVCMeshIndex() );
 		pEventTime->DefineComponent( GRP_EVENT_S1_F7_VC, true, false, false, _7SD_STATE_NUM0 );
@@ -234,6 +244,24 @@ namespace vc {
 
 		pSMAlert->DefineMeshGroup( GetVCMeshIndex(), GRP_XDS4_F7_VC );
 		pSMAlert->SetStateOffset( 1, 0.120117f, 0.619141f );
+
+		VECTOR3 switch_rot = _V(1, 0, 0);
+		VECTOR3 push_dir = _V(0.0, -0.258681, 0.965963);
+		VECTOR3 pull_dir = -push_dir;
+
+		pFltCntlrPower->DefineGroup(70);
+		pFltCntlrPower->SetInitialAnimState(0.5);
+		pFltCntlrPower->SetReference(_V(-0.363014, 1.97877, 14.6817), switch_rot);
+		pFltCntlrPower->SetMouseRegion(AID_F7, 0.0274, 0.9065, 0.0557, 0.9692);
+		pFltCntlrPower->SetPullDirection(pull_dir);
+
+		pRDRALTM->DefineGroup(71);
+		pRDRALTM->SetInitialAnimState(0.5);
+		pRDRALTM->SetReference(_V(-0.330845, 1.97951, 14.6821), _V(1, 0, 0));
+		pRDRALTM->SetMouseRegion( AID_F7, 0.0686f, 0.9065f, 0.1026f, 0.9692f);
+
+		DefineVCAnimations();
+
 		return;
 	}
 
@@ -244,8 +272,8 @@ namespace vc {
 		oapiVCRegisterArea(AID_F7, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED);
 
 		oapiVCSetAreaClickmode_Quadrilateral( AID_F7,
-			_V( -0.3879, 2.4088, 14.7837 ) + ofs, _V( 0.385, 2.4088, 14.7837 ) + ofs,
-			_V( -0.3879, 1.9679, 14.6604 ) + ofs, _V( 0.385, 1.9679, 14.6604 ) + ofs );
+			_V(-0.397143, 2.390688, 14.797020) + ofs, _V(0.391856, 2.390688, 14.797020) + ofs,
+			_V(-0.397143, 1.951031, 14.673615) + ofs, _V(0.391856, 1.951031, 14.673615) + ofs );
 
 		return;
 	}
@@ -340,6 +368,12 @@ namespace vc {
 		mar[1].Connect( pBundle, 10 );
 		cw_a.Connect( pBundle, 11 );
 		AtlantisPanel::Realize();
+
+		pBundle = STS()->BundleManager()->CreateBundle("DDU_POWER", 16);
+		pFltCntlrPower->ConnectPort(1, pBundle, 2);
+
+		pBundle = STS()->BundleManager()->CreateBundle("RDRALTM", 16);
+		pRDRALTM->ConnectPort(1, pBundle, 0);// CDR RDR ALTM
 	}
 
 	void PanelF7::OnPostStep( double simt, double simdt, double mjd )
@@ -358,6 +392,270 @@ namespace vc {
 		{
 			lightoutput[i].SetLine( (int)(power && (lightcmd[i].IsSet() || testright)) * 5.0f );
 		}
+
+		unsigned short PC_OMS_L;
+		unsigned short PC_OMS_R;
+		unsigned short He_L;
+		unsigned short He_R;
+		unsigned short N2_L;
+		unsigned short N2_R;
+		pCRT1->GetIDP()->GetOMSdata(PC_OMS_L, PC_OMS_R, He_L, He_R, N2_L, N2_R);
+
+		unsigned short PC_C;
+		unsigned short PC_L;
+		unsigned short PC_R;
+		unsigned short HeTk_C;
+		unsigned short HeTk_L;
+		unsigned short HeTk_R;
+		unsigned short HeTk_Pneu;
+		unsigned short HeReg_C;
+		unsigned short HeReg_L;
+		unsigned short HeReg_R;
+		unsigned short HeReg_Pneu;
+		unsigned short LH2_Manif;
+		unsigned short LO2_Manif;
+		pCRT1->GetIDP()->GetMPSdata(PC_C, PC_L, PC_R, HeTk_C, HeTk_L, HeTk_R, HeTk_Pneu, HeReg_C, HeReg_L, HeReg_R, HeReg_Pneu, LH2_Manif, LO2_Manif);
+
+		//OMS Gauges Animation
+		if (PC_OMS_L > 150.0) PC_OMS_L = 150.0;
+		if (PC_OMS_R > 150.0) PC_OMS_R = 150.0;
+		if (He_L > 5000.0) He_L = 5000.0;
+		if (He_R > 5000.0) He_R = 5000.0;
+		if (N2_L > 5000.0) N2_L = 5000.0;
+		if (N2_R > 5000.0) N2_R = 5000.0;
+
+		STS()->SetAnimation(anim_needle_oms_pc_left, PC_OMS_L / 150.0);
+		STS()->SetAnimation(anim_needle_oms_pc_right, PC_OMS_R / 150.0);
+
+		STS()->SetAnimation(anim_needle_oms_he_left, He_L / 5000.0);
+		STS()->SetAnimation(anim_needle_oms_he_right, He_R / 5000.0);
+
+		//MPS Gauges Animation
+		if (PC_C > 115.0) PC_C = 115.0;
+		if (PC_L > 115.0) PC_L = 115.0;
+		if (PC_R > 115.0) PC_R = 115.0;
+
+		if (LH2_Manif > 100.0) LH2_Manif = 100.0;
+		if (LO2_Manif > 300.0) LO2_Manif = 300.0;
+
+		if (HeReg_Pneu > 5000) HeReg_Pneu = 5000.0;
+		if (HeReg_C > 5000.0) HeReg_C = 5000.0;
+		if (HeReg_L > 5000.0) HeReg_L = 5000.0;
+		if (HeReg_R > 5000.0) HeReg_R = 5000.0;
+
+		if (HeTk_Pneu > 5000.0) HeTk_Pneu = 5000.0;
+		if (HeTk_C > 5000.0) HeTk_C = 5000.0;
+		if (HeTk_L > 5000.0) HeTk_L = 5000.0;
+		if (HeTk_R > 5000.0) HeTk_R = 5000.0;
+
+		STS()->SetAnimation(anim_needle_mps_pc_C, PC_C / 115.0);
+		STS()->SetAnimation(anim_needle_mps_pc_L, PC_L / 115.0);
+		STS()->SetAnimation(anim_needle_mps_pc_R, PC_R / 115.0);
+
+		STS()->SetAnimation(anim_needle_mps_LH2, LH2_Manif / 100.0);
+		STS()->SetAnimation(anim_needle_mps_LO2, LO2_Manif / 300.0);
+
+		STS()->SetAnimation(anim_needle_mps_he_PNEU, HeReg_Pneu / 5000.0);
+		STS()->SetAnimation(anim_needle_mps_he_C, HeReg_C / 5000.0);
+		STS()->SetAnimation(anim_needle_mps_he_L, HeReg_L / 5000.0);
+		STS()->SetAnimation(anim_needle_mps_he_R, HeReg_R / 5000.0);
+
+		//G-Meter
+		VECTOR3 f;
+		STS()->GetForceVector(f);
+		double dtmp = (f.z / (STS()->GetMass() * G)) + sin(STS()->GetPitch());
+
+		if (dtmp > 4.0) dtmp = 4.0;
+		else if (dtmp < -2.0) dtmp = -2.0;
+
+		STS()->SetAnimation(anim_needle_g_meter, (dtmp + 2.0) / 6.0);
+
+		//SPI
+		double LOB;
+		double LIB;
+		double RIB;
+		double ROB;
+		double DAFB;
+		double DRFB;
+		double DBFOFB;
+		double Speedbrake_Pos;
+		double Speedbrake_Cmd;
+		pCRT1->GetIDP()->GetAerosurfacePositions(LOB, LIB, RIB, ROB, DAFB, DRFB, DBFOFB, Speedbrake_Pos, Speedbrake_Cmd);
+
+		//SPI Needles animation
+		if (LOB > 20.0) LOB = 20.0;
+		else if (LOB < -35.0) LOB = -35.0;
+
+		if (LIB > 20.0) LIB = 20.0;
+		else if (LIB < -35.0) LIB = -35.0;
+
+		if (ROB > 20.0) ROB = 20.0;
+		else if (ROB < -35.0) ROB = -35.0;
+
+		if (RIB > 20.0) RIB = 20.0;
+		else if (RIB < -35.0) RIB = -35.0;
+
+		if (DBFOFB > 100.0) DBFOFB = 100.0;
+		else if (DBFOFB < 0.0) DBFOFB = 0.0;
+
+		if (DRFB > 30.0) DRFB = 30.0;
+		else if (DRFB < -30.0) DRFB = -30.0;
+
+		if (DAFB > 5.0) DAFB = 5.0;
+		else if (DAFB < -5.0) DAFB = -5.0;
+
+		if (Speedbrake_Pos > 100.0) Speedbrake_Pos = 100.0;
+		else if (Speedbrake_Pos < 0.0) Speedbrake_Pos = 0.0;
+
+		if (Speedbrake_Cmd > 100.0) Speedbrake_Cmd = 100.0;
+		else if (Speedbrake_Cmd < 0.0) Speedbrake_Cmd = 0.0;
+
+		STS()->SetAnimation(anim_needle_LOB, (20.0 - LOB) / 55.0);
+		STS()->SetAnimation(anim_needle_LIB, (20.0 - LIB) / 55.0);
+		STS()->SetAnimation(anim_needle_ROB, (20.0 - ROB) / 55.0);
+		STS()->SetAnimation(anim_needle_RIB, (20.0 - RIB) / 55.0);
+
+		STS()->SetAnimation(anim_needle_DBFOFB, DBFOFB / 100);
+
+		STS()->SetAnimation(anim_needle_DRFB, (DRFB + 30.0) / 60.0);
+
+		STS()->SetAnimation(anim_needle_DAFB, (5.0 - DAFB) / 10.0);
+
+		STS()->SetAnimation(anim_needle_Speedbrake_Pos, Speedbrake_Pos / 100);
+		STS()->SetAnimation(anim_needle_Speedbrake_Cmd, Speedbrake_Cmd / 100);
+
 		return;
+	}
+
+	void PanelF7::DefineVCAnimations()
+	{
+		//OMS Press
+		//Pc
+		static UINT needle_oms_pc_left[1] = { 58 };
+		static UINT needle_oms_pc_right[1] = { 59 };
+		mgr_needle_oms_pc_left = new MGROUP_ROTATE(GetVCMeshIndex(), needle_oms_pc_left, 1, _V(-0.358495, 2.017144, 14.927303), _V(1,0,0), (float)(RAD * 16.35));
+		mgr_needle_oms_pc_right = new MGROUP_ROTATE(GetVCMeshIndex(), needle_oms_pc_right, 1, _V(-0.358495, 2.017144, 14.927303), _V(1, 0, 0), (float)(RAD * 16.35));
+		anim_needle_oms_pc_left = STS()->CreateAnimation(0.0);
+		anim_needle_oms_pc_right = STS()->CreateAnimation(0.0);
+		STS()->AddAnimationComponent(anim_needle_oms_pc_left, 0, 1, mgr_needle_oms_pc_left);
+		STS()->AddAnimationComponent(anim_needle_oms_pc_right, 0, 1, mgr_needle_oms_pc_right);
+
+		//He/N2
+		static UINT needle_oms_he_left[1] = { 58 };
+		static UINT needle_oms_he_right[1] = { 59 };
+		mgr_needle_oms_he_left = new MGROUP_ROTATE(GetVCMeshIndex(), needle_oms_he_left, 1, _V(-0.303327, 2.01714, 14.9273), _V(1, 0, 0), (float)(RAD * 17.4));
+		mgr_needle_oms_he_right = new MGROUP_ROTATE(GetVCMeshIndex(), needle_oms_he_right, 1, _V(-0.303327, 2.01714, 14.9273), _V(1, 0, 0), (float)(RAD * 17.4));
+		anim_needle_oms_he_left = STS()->CreateAnimation(0.0);
+		anim_needle_oms_he_right = STS()->CreateAnimation(0.0);
+		STS()->AddAnimationComponent(anim_needle_oms_he_left, 0, 1, mgr_needle_oms_he_left);
+		STS()->AddAnimationComponent(anim_needle_oms_he_right, 0, 1, mgr_needle_oms_he_right);
+
+		//MPS Press
+		//Pc
+		static UINT needle_mps_pc_L[1] = { 62 };
+		static UINT needle_mps_pc_C[2] = { 63, 64 };
+		static UINT needle_mps_pc_R[1] = { 65 };
+		mgr_needle_mps_pc_L = new MGROUP_TRANSLATE(GetVCMeshIndex(), needle_mps_pc_L, 1, _V(0.0, 0.068063, 0.018901));
+		mgr_needle_mps_pc_C = new MGROUP_TRANSLATE(GetVCMeshIndex(), needle_mps_pc_C, 1, _V(0.0, 0.068063, 0.018901));
+		mgr_needle_mps_pc_R = new MGROUP_TRANSLATE(GetVCMeshIndex(), needle_mps_pc_R, 1, _V(0.0, 0.068063, 0.018901));
+		anim_needle_mps_pc_L = STS()->CreateAnimation(0.0);
+		anim_needle_mps_pc_C = STS()->CreateAnimation(0.0);
+		anim_needle_mps_pc_R = STS()->CreateAnimation(0.0);
+		STS()->AddAnimationComponent(anim_needle_mps_pc_L, 0, 1, mgr_needle_mps_pc_L);
+		STS()->AddAnimationComponent(anim_needle_mps_pc_C, 0, 1, mgr_needle_mps_pc_C);
+		STS()->AddAnimationComponent(anim_needle_mps_pc_R, 0, 1, mgr_needle_mps_pc_R);
+
+		//LO2
+		static UINT needle_mps_LO2[1] = { 66 };
+		mgr_needle_mps_LO2 = new MGROUP_TRANSLATE(GetVCMeshIndex(), needle_mps_LO2, 1, _V(0.0, 0.063708, 0.017692));
+		anim_needle_mps_LO2 = STS()->CreateAnimation(0.0);
+		STS()->AddAnimationComponent(anim_needle_mps_LO2, 0, 1, mgr_needle_mps_LO2);
+
+		//LH2
+		static UINT needle_mps_LH2[1] = { 67 };
+		mgr_needle_mps_LH2 = new MGROUP_TRANSLATE(GetVCMeshIndex(), needle_mps_LH2, 1, _V(0.0, 0.065329, 0.018142));
+		anim_needle_mps_LH2 = STS()->CreateAnimation(0.0);
+		STS()->AddAnimationComponent(anim_needle_mps_LH2, 0, 1, mgr_needle_mps_LH2);
+
+		//He
+		static UINT needle_mps_he_PNEU[1] = { 91 };
+		static UINT needle_mps_he_L[1] = { 68 };
+		static UINT needle_mps_he_C[1] = { 69 };
+		static UINT needle_mps_he_R[1] = { 92 };
+		mgr_needle_mps_he_PNEU = new MGROUP_TRANSLATE(GetVCMeshIndex(), needle_mps_he_PNEU, 1, _V(0.0, 0.065589, 0.018057));
+		mgr_needle_mps_he_L = new MGROUP_TRANSLATE(GetVCMeshIndex(), needle_mps_he_L, 1, _V(0.0, 0.065589, 0.018057));
+		mgr_needle_mps_he_C = new MGROUP_TRANSLATE(GetVCMeshIndex(), needle_mps_he_C, 1, _V(0.0, 0.065589, 0.018057));
+		mgr_needle_mps_he_R = new MGROUP_TRANSLATE(GetVCMeshIndex(), needle_mps_he_R, 1, _V(0.0, 0.065589, 0.018057));
+		anim_needle_mps_he_PNEU = STS()->CreateAnimation(0.0);
+		anim_needle_mps_he_L = STS()->CreateAnimation(0.0);
+		anim_needle_mps_he_C = STS()->CreateAnimation(0.0);
+		anim_needle_mps_he_R = STS()->CreateAnimation(0.0);
+		STS()->AddAnimationComponent(anim_needle_mps_he_PNEU, 0, 1, mgr_needle_mps_he_PNEU);
+		STS()->AddAnimationComponent(anim_needle_mps_he_L, 0, 1, mgr_needle_mps_he_L);
+		STS()->AddAnimationComponent(anim_needle_mps_he_C, 0, 1, mgr_needle_mps_he_C);
+		STS()->AddAnimationComponent(anim_needle_mps_he_R, 0, 1, mgr_needle_mps_he_R);
+
+		//G-Meter
+		static UINT needle_g_meter[1] = { 78 };
+		mgr_needle_g_meter = new MGROUP_ROTATE(GetVCMeshIndex(), needle_g_meter, 1, _V(-0.21095, 1.99888, 14.6831), _V(0.000000, -0.273178, 0.961963), (float)(RAD * -323.23));
+		anim_needle_g_meter = STS()->CreateAnimation(0.0);
+		STS()->AddAnimationComponent(anim_needle_g_meter, 0, 1, mgr_needle_g_meter);
+
+		//SPI
+		//LOB
+		static UINT needle_LOB[1] = { 79 };
+		mgr_needle_LOB = new MGROUP_TRANSLATE(GetVCMeshIndex(), needle_LOB, 1, _V(0.0, 0.069643, 0.01934));
+		anim_needle_LOB = STS()->CreateAnimation(0.0);
+		STS()->AddAnimationComponent(anim_needle_LOB, 0, 1, mgr_needle_LOB);
+
+		//LIB
+		static UINT needle_LIB[1] = { 80 };
+		mgr_needle_LIB = new MGROUP_TRANSLATE(GetVCMeshIndex(), needle_LIB, 1, _V(0.0, 0.069643, 0.01934));
+		anim_needle_LIB = STS()->CreateAnimation(0.0);
+		STS()->AddAnimationComponent(anim_needle_LIB, 0, 1, mgr_needle_LIB);
+
+		//ROB
+		static UINT needle_ROB[1] = { 82 };
+		mgr_needle_ROB = new MGROUP_TRANSLATE(GetVCMeshIndex(), needle_ROB, 1, _V(0.0, 0.069643, 0.01934));
+		anim_needle_ROB = STS()->CreateAnimation(0.0);
+		STS()->AddAnimationComponent(anim_needle_ROB, 0, 1, mgr_needle_ROB);
+
+		//RIB
+		static UINT needle_RIB[1] = { 81 };
+		mgr_needle_RIB = new MGROUP_TRANSLATE(GetVCMeshIndex(), needle_RIB, 1, _V(0.0, 0.069643, 0.01934));
+		anim_needle_RIB = STS()->CreateAnimation(0.0);
+		STS()->AddAnimationComponent(anim_needle_RIB, 0, 1, mgr_needle_RIB);
+
+		//DBFOFB
+		static UINT needle_DBFOFB[1] = { 83 };
+		mgr_needle_DBFOFB = new MGROUP_TRANSLATE(GetVCMeshIndex(), needle_DBFOFB, 1, _V(0.0, -0.069765, -0.019374));
+		anim_needle_DBFOFB = STS()->CreateAnimation(0.0);
+		STS()->AddAnimationComponent(anim_needle_DBFOFB, 0, 1, mgr_needle_DBFOFB);
+
+		//DRFB
+		static UINT needle_DRFB[1] = { 84 };
+		mgr_needle_DRFB = new MGROUP_TRANSLATE(GetVCMeshIndex(), needle_DRFB, 1, _V(0.03182, 0.0, 0.0));
+		anim_needle_DRFB = STS()->CreateAnimation(0.5);
+		STS()->AddAnimationComponent(anim_needle_DRFB, 0, 1, mgr_needle_DRFB);
+
+		//DAFB
+		static UINT needle_DAFB[1] = { 85 };
+		mgr_needle_DAFB = new MGROUP_TRANSLATE(GetVCMeshIndex(), needle_DAFB, 1, _V(0.032573, 0.0, 0.0));
+		anim_needle_DAFB = STS()->CreateAnimation(0.5);
+		STS()->AddAnimationComponent(anim_needle_DAFB, 0, 1, mgr_needle_DAFB);
+
+		//Speedbrake_Pos
+		static UINT needle_Speedbrake_Pos[1] = { 86 };
+		mgr_needle_Speedbrake_Pos = new MGROUP_TRANSLATE(GetVCMeshIndex(), needle_Speedbrake_Pos, 1, _V(0.064782, 0.0, 0.0));
+		anim_needle_Speedbrake_Pos = STS()->CreateAnimation(0.0);
+		STS()->AddAnimationComponent(anim_needle_Speedbrake_Pos, 0, 1, mgr_needle_Speedbrake_Pos);
+
+		//Speedbrake_Pos
+		static UINT needle_Speedbrake_Cmd[1] = { 87 };
+		mgr_needle_Speedbrake_Cmd = new MGROUP_TRANSLATE(GetVCMeshIndex(), needle_Speedbrake_Cmd, 1, _V(0.064782, 0.0, 0.0));
+		anim_needle_Speedbrake_Cmd = STS()->CreateAnimation(0.0);
+		STS()->AddAnimationComponent(anim_needle_Speedbrake_Cmd, 0, 1, mgr_needle_Speedbrake_Cmd);
+
+
 	}
 }

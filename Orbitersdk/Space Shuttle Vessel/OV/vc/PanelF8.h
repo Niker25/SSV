@@ -110,6 +110,43 @@ namespace vc
 		void DefineVC() override;
 		void RegisterVC() override;
 		void Realize() override;
+		void OnPreStep(double simt, double simdt, double mjd) override;
+		void DefineVCAnimations();
+		void VisualCreated() override;
+
+		UINT anim_adiR = -1, anim_adiP = -1, anim_adiY = -1;
+		MGROUP_TRANSFORM* mgr_adiR = nullptr, * mgr_adiP = nullptr, * mgr_adiY = nullptr;
+		ANIMATIONCOMPONENT_HANDLE ach_ADIroll = nullptr, ach_ADIpitch = nullptr, ach_ADIyaw = nullptr;
+
+		//Anim Error Needles//////////////////////////////////////////////////
+		UINT anim_needle_RollRateCDR = -1, anim_needle_PitchRateCDR = -1, anim_needle_YawRateCDR = -1;
+		MGROUP_TRANSFORM* mgr_needle_RollRateCDR = nullptr, * mgr_needle_PitchRateCDR = nullptr, * mgr_needle_YawRateCDR = nullptr;
+
+		UINT anim_needle_RollErrorCDR = -1, anim_needle_PitchErrorCDR = -1, anim_needle_YawErrorCDR = -1;
+		MGROUP_TRANSFORM* mgr_needle_RollErrorCDR = nullptr, * mgr_needle_PitchErrorCDR = nullptr, * mgr_needle_YawErrorCDR = nullptr;
+
+		//AMI
+		DEVMESHHANDLE hF8_dev = nullptr;
+		std::vector<NTVERTEX> alpha1Vtx, alpha2Vtx, accelVtx, mVtx, ktVtx, hdotVtx, altVtx;
+		std::vector<WORD> alpha1Idx, alpha2Idx, accelIdx, mIdx, ktIdx, hdotIdx, altIdx;
+		std::vector<float> alpha1TV, alpha2TV, accelTV, mTV, ktTV, hdotTV, altTV;
+		GROUPEDITSPEC alpha1Edit = {}, alpha2Edit = {}, accelEdit = {}, mEdit = {}, ktEdit = {}, hdotEdit = {}, altEdit = {};
+
+		UINT anim_needle_alpha = -1, anim_needle_alt = -1;
+		MGROUP_TRANSFORM* mgr_needle_alpha = nullptr, * mgr_needle_alt = nullptr;
+
+		//Hydraulic Needles
+		UINT anim_needle_hyd_press_1 = -1, anim_needle_hyd_press_2 = -1, anim_needle_hyd_press_3 = -1;
+		MGROUP_TRANSFORM* mgr_needle_hyd_press_1 = nullptr, * mgr_needle_hyd_press_2 = nullptr, * mgr_needle_hyd_press_3 = nullptr;
+		UINT anim_needle_hyd_qty_1 = -1, anim_needle_hyd_qty_2 = -1, anim_needle_hyd_qty_3 = -1;
+		MGROUP_TRANSFORM* mgr_needle_hyd_qty_1 = nullptr, * mgr_needle_hyd_qty_2 = nullptr, * mgr_needle_hyd_qty_3 = nullptr;
+
+		//APU Needles
+		UINT anim_needle_fuel_qty_1 = -1, anim_needle_fuel_qty_2 = -1, anim_needle_fuel_qty_3 = -1;
+		MGROUP_TRANSFORM* mgr_needle_fuel_qty_1 = nullptr, * mgr_needle_fuel_qty_2 = nullptr, * mgr_needle_fuel_qty_3 = nullptr;
+
+		UINT anim_needle_apu_egt = -1, anim_needle_apu_fuel_press = -1, anim_needle_apu_oil_temp = -1;
+		MGROUP_TRANSFORM* mgr_needle_apu_egt = nullptr, * mgr_needle_apu_fuel_press = nullptr, * mgr_needle_apu_oil_temp = nullptr;
 
 	};
 }

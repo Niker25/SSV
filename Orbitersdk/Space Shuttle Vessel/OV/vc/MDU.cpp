@@ -286,16 +286,17 @@ namespace vc
 	bool MDU::OnMouseEvent(int _event, float x, float y)
 	{
 		//sprintf_s(oapiDebugString(), 256, "MDU %s mouse event %d (%f, %f)", GetQualifiedIdentifier().c_str(), _event, x, y);
-		if ((y >= 0.843f) && (y <= 0.917f) && (x >= 0.038f) && (x <= 0.1f))
+		//ymax, ymin, xmin, xmax
+		if ((y >= 0.912661) && (y <= 0.967579) && (x >= 0.872059) && (x <= 0.911637))
 		{
 			if(_event & PANEL_MOUSE_LBDOWN)
 			{
-				//sprintf_s(oapiDebugString(), 256, "MDU %s POWER ON/OFF", GetQualifiedIdentifier().c_str());
+				sprintf_s(oapiDebugString(), 256, "MDU %s POWER ON/OFF", GetQualifiedIdentifier().c_str());
 				oapiSendMFDKey(usMDUID, OAPI_KEY_ESCAPE);
 				if (oapiGetMFDMode( usMDUID ) != 0) oapiOpenMFD( 1000, usMDUID );
 			}
 		}
-		else if ((y >= 0.843f) && (y <= 0.917f) && (x >= 0.907f) && (x <= 0.9385f))
+		else if ((y >= 0.8379f) && (y <= 0.97f) && (x >= 0.0765f) && (x <= 0.1706f))
 		{
 			//sprintf_s(oapiDebugString(), 256, "MDU %s BRIGHTNESS", GetQualifiedIdentifier().c_str());
 			if (_event & PANEL_MOUSE_LBPRESSED)

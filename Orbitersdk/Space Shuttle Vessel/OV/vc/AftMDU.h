@@ -77,6 +77,21 @@ namespace vc
 
 		void DefineVC() override;
 		void RegisterVC() override;
+
+		void DefineVCAnimations();
+
+		void OnPreStep(double simt, double simdt, double mjd) override;
+
+		UINT anim_adiR = -1, anim_adiP = -1, anim_adiY = -1;
+		MGROUP_TRANSFORM* mgr_adiR = nullptr, * mgr_adiP = nullptr, * mgr_adiY = nullptr;
+		ANIMATIONCOMPONENT_HANDLE ach_ADIroll = nullptr, ach_ADIpitch = nullptr, ach_ADIyaw = nullptr;
+
+		//Anim Error Needles//////////////////////////////////////////////////
+		UINT anim_needle_RollRateCDR = -1, anim_needle_PitchRateCDR = -1, anim_needle_YawRateCDR = -1;
+		MGROUP_TRANSFORM* mgr_needle_RollRateCDR = nullptr, * mgr_needle_PitchRateCDR = nullptr, * mgr_needle_YawRateCDR = nullptr;
+
+		UINT anim_needle_RollErrorCDR = -1, anim_needle_PitchErrorCDR = -1, anim_needle_YawErrorCDR = -1;
+		MGROUP_TRANSFORM* mgr_needle_RollErrorCDR = nullptr, * mgr_needle_PitchErrorCDR = nullptr, * mgr_needle_YawErrorCDR = nullptr;
 	};
 }
 
