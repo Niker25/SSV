@@ -95,8 +95,8 @@ Date         Developer
 //#define CR_PINK RGB( 220, 150, 220 )
 //#define CR_BROWN RGB( 190, 50, 30 )
 
-#define CR_DPS_NORMAL RGB( 0, 0, 0 )
-#define CR_DPS_OVERBRIGHT RGB( 0, 0, 0 )
+#define CR_DPS_NORMAL RGB( 128, 255, 0 )
+#define CR_DPS_OVERBRIGHT RGB( 128, 255, 0 )
 
 inline constexpr int DPS_DISPLAY_VERTICAL_OFFSET = 32;
 

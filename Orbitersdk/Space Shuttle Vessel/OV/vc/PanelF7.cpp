@@ -556,7 +556,7 @@ namespace vc {
 		static UINT needle_mps_pc_C[2] = { 63, 64 };
 		static UINT needle_mps_pc_R[1] = { 65 };
 		mgr_needle_mps_pc_L = new MGROUP_TRANSLATE(GetVCMeshIndex(), needle_mps_pc_L, 1, _V(0.0, 0.068063, 0.018901));
-		mgr_needle_mps_pc_C = new MGROUP_TRANSLATE(GetVCMeshIndex(), needle_mps_pc_C, 1, _V(0.0, 0.068063, 0.018901));
+		mgr_needle_mps_pc_C = new MGROUP_TRANSLATE(GetVCMeshIndex(), needle_mps_pc_C, 2, _V(0.0, 0.068063, 0.018901));
 		mgr_needle_mps_pc_R = new MGROUP_TRANSLATE(GetVCMeshIndex(), needle_mps_pc_R, 1, _V(0.0, 0.068063, 0.018901));
 		anim_needle_mps_pc_L = STS()->CreateAnimation(0.0);
 		anim_needle_mps_pc_C = STS()->CreateAnimation(0.0);
