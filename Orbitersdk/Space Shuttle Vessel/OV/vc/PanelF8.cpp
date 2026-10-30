@@ -32,10 +32,13 @@ Date         Developer
 
 namespace vc {
 
-	PanelF8::PanelF8(Atlantis* _sts)
+	PanelF8::PanelF8(Atlantis* _sts, bool hasMEDS)
 		: AtlantisPanel(_sts, "F8")
 	{
-		DefineMesh( MESHNAME_PANELF8_MCD );
+		bHasMEDS = hasMEDS;
+
+		if (bHasMEDS) DefineMesh( MESHNAME_PANELF8 );
+		else DefineMesh(MESHNAME_PANELF8_MCD);
 
 		Add(pPLT1 = new MDU(_sts, "PLT1", MDUID_PLT1));
 		Add(pPLT2 = new MDU(_sts, "PLT2", MDUID_PLT2));
@@ -87,6 +90,29 @@ namespace vc {
 
 	PanelF8::~PanelF8()
 	{
+		delete mgr_adiR;
+		delete mgr_adiP;
+		delete mgr_adiY;
+		delete mgr_needle_RollRateCDR;
+		delete mgr_needle_PitchRateCDR;
+		delete mgr_needle_YawRateCDR;
+		delete mgr_needle_RollErrorCDR;
+		delete mgr_needle_PitchErrorCDR;
+		delete mgr_needle_YawErrorCDR;
+		delete mgr_needle_alpha;
+		delete mgr_needle_alt;
+		delete mgr_needle_hyd_press_1;
+		delete mgr_needle_hyd_press_2;
+		delete mgr_needle_hyd_press_3;
+		delete mgr_needle_hyd_qty_1;
+		delete mgr_needle_hyd_qty_2;
+		delete mgr_needle_hyd_qty_3;
+		delete mgr_needle_fuel_qty_1;
+		delete mgr_needle_fuel_qty_2;
+		delete mgr_needle_fuel_qty_3;
+		delete mgr_needle_apu_egt;
+		delete mgr_needle_apu_fuel_press;
+		delete mgr_needle_apu_oil_temp;
 	}
 
 	void PanelF8::DefineVC()
@@ -100,33 +126,67 @@ namespace vc {
 		AddAIDToMouseEventList( AID_F8_HUD );
 
 		pPLT1->DefineVCGroup( GRP_PLT1_F8_VC );
-		pPLT1->DefineMaterial( MAT_MDU_PLT1_F8_VC );
+		if (bHasMEDS) pPLT1->DefineMaterial( MAT_MDU_PLT1_F8_VC );
+		else pPLT1->DefineMaterial(8);
 		pPLT1->SetMouseRegion( AID_F8_MDU, 0.0f, 0.0f, 0.489801f, 1.0f );
 
 		pPLT2->DefineVCGroup( GRP_PLT2_F8_VC );
-		pPLT2->DefineMaterial( MAT_MDU_PLT2_F8_VC );
+		if (bHasMEDS) pPLT2->DefineMaterial( MAT_MDU_PLT2_F8_VC );
+		else pPLT2->DefineMaterial(9);
 		pPLT2->SetMouseRegion( AID_F8_MDU, 0.509333f, 0.0f, 1.0f, 1.0f );
 
 		pFltCntlrPower->DefineGroup(GRP_SWITCH5_F8_VC);
 		pFltCntlrPower->SetInitialAnimState(0.5);
-		pFltCntlrPower->SetReference(_V(0.740634, 1.975803, 14.681213), switch_rot);
-		pFltCntlrPower->SetMouseRegion( AID_F8, 0.597045, 0.894284, 0.638862, 0.96521);
+		if (bHasMEDS)
+		{
+			pFltCntlrPower->SetReference(_V(-0.734, 1.99, 14.685), switch_rot);
+			pFltCntlrPower->SetMouseRegion(AID_F8, 0.379877f, 0.609586f, 0.422314f, 0.793425f);
+		}
+		else
+		{
+			pFltCntlrPower->SetReference(_V(0.740634, 1.975803, 14.681213), switch_rot);
+			pFltCntlrPower->SetMouseRegion(AID_F8, 0.597045, 0.894284, 0.638862, 0.96521);
+		}
 		pFltCntlrPower->SetPullDirection( pull_dir );
 
 		pADIAttitude->DefineGroup( GRP_SWITCH6_F8_VC );
 		pADIAttitude->SetInitialAnimState( 0.5 );
-		pADIAttitude->SetReference( _V(0.845344, 2.188198, 14.738081), switch_rot );
-		pADIAttitude->SetMouseRegion( AID_F8, 0.794606, 0.324753, 0.836424, 0.38584);
+		if (bHasMEDS)
+		{
+			pADIAttitude->SetReference(_V(-0.633, 2.045, 14.7004), switch_rot);
+			pADIAttitude->SetMouseRegion(AID_F8, 0.573540f, 0.180482f, 0.616687f, 0.353228f);
+		}
+		else
+		{
+			pADIAttitude->SetReference(_V(0.845344, 2.188198, 14.738081), switch_rot);
+			pADIAttitude->SetMouseRegion(AID_F8, 0.794606, 0.324753, 0.836424, 0.38584);
+		}
 
 		pADIError->DefineGroup( GRP_SWITCH7_F8_VC );
 		pADIError->SetInitialAnimState( 0.5 );
-		pADIError->SetReference( _V(0.881845, 2.188198, 14.738081), switch_rot );
-		pADIError->SetMouseRegion( AID_F8, 0.865369f, 0.324666f, 0.905219f, 0.393350f);
+		if (bHasMEDS)
+		{
+			pADIError->SetReference(_V(-0.5921, 2.0469, 14.7009), switch_rot);
+			pADIError->SetMouseRegion(AID_F8, 0.652143f, 0.174853f, 0.699142f, 0.359075f);
+		}
+		else
+		{
+			pADIError->SetReference(_V(0.881845, 2.188198, 14.738081), switch_rot);
+			pADIError->SetMouseRegion(AID_F8, 0.865369f, 0.324666f, 0.905219f, 0.393350f);
+		}
 
 		pADIRate->DefineGroup( GRP_SWITCH8_F8_VC );
 		pADIRate->SetInitialAnimState( 0.5 );
-		pADIRate->SetReference( _V(0.908158, 2.188198, 14.738081), switch_rot );
-		pADIRate->SetMouseRegion( AID_F8, 0.91516f, 0.324666f, 0.955133f, 0.393350f);
+		if (bHasMEDS)
+		{
+			pADIRate->SetReference(_V(-0.5627, 2.0463, 14.7008), switch_rot);
+			pADIRate->SetMouseRegion(AID_F8, 0.708632f, 0.178725f, 0.750834f, 0.350277f);
+		}
+		else
+		{
+			pADIRate->SetReference(_V(0.908158, 2.188198, 14.738081), switch_rot);
+			pADIRate->SetMouseRegion(AID_F8, 0.91516f, 0.324666f, 0.955133f, 0.393350f);
+		}
 
 		pLandingGearTB[0]->DefineMeshGroup( GetVCMeshIndex(), GRP_DS1_F8_VC );
 
@@ -134,24 +194,42 @@ namespace vc {
 
 		pLandingGearTB[2]->DefineMeshGroup( GetVCMeshIndex(), GRP_DS3_F8_VC );
 
-		pLandingGearArmDeployCover[0]->SetMouseRegion( AID_F8, 0, 0.034026, 0.678355, 0.118336, 0.759889);
-		pLandingGearArmDeployCover[0]->SetMouseRegion( AID_F8, 1, 0.034026, 0.678355, 0.051717, 0.759889);
+		if (bHasMEDS)
+		{
+			pLandingGearArmDeployCover[0]->SetMouseRegion(AID_F8, 0, 0.052979f, 0.513634f, 0.120368f, 0.740271f);
+			pLandingGearArmDeployCover[0]->SetMouseRegion(AID_F8, 1, 0.049178f, 0.511376f, 0.065602f, 0.734235f);
+		}
+		else
+		{
+			pLandingGearArmDeployCover[0]->SetMouseRegion(AID_F8, 0, 0.034026, 0.678355, 0.118336, 0.759889);
+			pLandingGearArmDeployCover[0]->SetMouseRegion(AID_F8, 1, 0.034026, 0.678355, 0.051717, 0.759889);
+		}
 		pLandingGearArmDeployCover[0]->SetReference( _V( 0.444, 1.99996, 14.68735 ), _V( 0, 0.965408, 0.260745 ) );
 		pLandingGearArmDeployCover[0]->DefineGroup( GRP_A5_COVER1_F8_VC );
 
-		pLandingGearArmDeployCover[1]->SetMouseRegion( AID_F8, 0, 0.121914, 0.678355, 0.206224, 0.759889);
-		pLandingGearArmDeployCover[1]->SetMouseRegion( AID_F8, 1, 0.121914, 0.678355, 0.139603, 0.759889);
+		if (bHasMEDS)
+		{
+			pLandingGearArmDeployCover[1]->SetMouseRegion(AID_F8, 0, 0.142077f, 0.513883f, 0.210356f, 0.740062f);
+			pLandingGearArmDeployCover[1]->SetMouseRegion(AID_F8, 1, 0.139839f, 0.516023f, 0.154470f, 0.733397f);
+		}
+		else
+		{
+			pLandingGearArmDeployCover[1]->SetMouseRegion(AID_F8, 0, 0.121914, 0.678355, 0.206224, 0.759889);
+			pLandingGearArmDeployCover[1]->SetMouseRegion(AID_F8, 1, 0.121914, 0.678355, 0.139603, 0.759889);
+		}
 		pLandingGearArmDeployCover[1]->SetReference( _V( 0.4913, 1.99996, 14.68735 ), _V( 0, 0.965408, 0.260745 ) );
 		pLandingGearArmDeployCover[1]->DefineGroup( GRP_A5_COVER2_F8_VC );
 
 		pLandingGearArmDeploy[0]->SetStateOffset( 1, 0.0f, 0.488281f );
 		pLandingGearArmDeploy[0]->SetDirection( push_dir );
-		pLandingGearArmDeploy[0]->SetMouseRegion( AID_F8, 0.060019, 0.69123, 0.102178, 0.750808);
+		if (bHasMEDS) pLandingGearArmDeploy[0]->SetMouseRegion(AID_F8, 0.072426f, 0.551969f, 0.114127f, 0.720267f);
+		else pLandingGearArmDeploy[0]->SetMouseRegion( AID_F8, 0.060019, 0.69123, 0.102178, 0.750808);
 		pLandingGearArmDeploy[0]->DefineMeshGroup( GetVCMeshIndex(), GRP_A5_S1_F8_VC );
 
 		pLandingGearArmDeploy[1]->SetStateOffset( 1, 0.0f, 0.488281f );
 		pLandingGearArmDeploy[1]->SetDirection( push_dir );
-		pLandingGearArmDeploy[1]->SetMouseRegion( AID_F8, 0.146963, 0.69123, 0.189122, 0.750808);
+		if (bHasMEDS) pLandingGearArmDeploy[1]->SetMouseRegion(AID_F8, 0.160673f, 0.552534f, 0.201274f, 0.716342f);
+		else pLandingGearArmDeploy[1]->SetMouseRegion( AID_F8, 0.146963, 0.69123, 0.189122, 0.750808);
 		pLandingGearArmDeploy[1]->DefineMeshGroup( GetVCMeshIndex(), GRP_A5_S2_F8_VC );
 
 		pHUDMode->DefineGroup( GRP_HUDTEST_F8_VC );
@@ -170,27 +248,53 @@ namespace vc {
 		pHUDBright->SetReference( _V( -0.7070, 2.4680, 14.5712 ), _V( 1, 0, 0 ) );
 		pHUDBright->SetMouseRegion( AID_F8_HUD, 0.810735f, 0.390512f, 0.943742f, 0.641940f );
 
-		pRDRALTM->DefineGroup( GRP_SWITCH4_F8_VC );
-		pRDRALTM->SetInitialAnimState( 0.5 );
-		pRDRALTM->SetReference( _V(0.770647, 1.976258, 14.681389), _V( 1, 0, 0 ) );
-		pRDRALTM->SetMouseRegion( AID_F8, 0.650529, 0.894284, 0.693987, 0.96521);
+		if (bHasMEDS)
+		{
+			pRDRALTM->DefineGroup(GRP_SWITCH4_F8_VC);
+			pRDRALTM->SetInitialAnimState(0.5);
+			pRDRALTM->SetReference(_V(0.59147, 1.99117, 14.6857), _V(1, 0, 0));
+			pRDRALTM->SetMouseRegion(AID_F8, 0.322341f, 0.613130f, 0.370220f, 0.787155f);
+		}
+		else
+		{
+			pRDRALTM->DefineGroup(GRP_SWITCH4_F8_VC);
+			pRDRALTM->SetInitialAnimState(0.5);
+			pRDRALTM->SetReference(_V(0.770647, 1.976258, 14.681389), _V(1, 0, 0));
+			pRDRALTM->SetMouseRegion(AID_F8, 0.650529, 0.894284, 0.693987, 0.96521);
 
-		DefineVCAnimations();
+			DefineVCAnimations();
+		}
 	}
 
 	void PanelF8::RegisterVC()
 	{
 		AtlantisPanel::RegisterVC();
 		VECTOR3 ofs = STS()->GetOrbiterCoGOffset() + VC_OFFSET;
-		oapiVCRegisterArea( AID_F8, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED );
-		oapiVCSetAreaClickmode_Quadrilateral( AID_F8,
-			_V(0.415603, 2.320348, 14.773583) + ofs, _V(0.942375, 2.320348, 14.773585) + ofs,
-			_V(0.415603, 1.951080, 14.674603) + ofs, _V(0.942375, 1.951079, 14.674605) + ofs );
 
-		oapiVCRegisterArea( AID_F8_MDU, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED );
-		oapiVCSetAreaClickmode_Quadrilateral( AID_F8_MDU,
-			_V( 0.4227, 2.3119, 15.4043) + ofs, _V( 0.9362, 2.3119, 15.4043) + ofs,
-			_V( 0.4227, 2.0984, 15.4043) + ofs, _V( 0.9362, 2.0984, 15.4043) + ofs );
+		if (bHasMEDS)
+		{
+			oapiVCRegisterArea(AID_F8, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED);
+			oapiVCSetAreaClickmode_Quadrilateral(AID_F8,
+				_V(0.4187, 2.0814, 14.7091) + ofs, _V(0.9412, 2.0814, 14.7091) + ofs,
+				_V(0.4187, 1.9513, 14.6745) + ofs, _V(0.9412, 1.9513, 14.6745) + ofs);
+
+			oapiVCRegisterArea(AID_F8_MDU, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED);
+			oapiVCSetAreaClickmode_Quadrilateral(AID_F8_MDU,
+				_V(0.4227, 2.3119, 14.7565) + ofs, _V(0.9362, 2.3119, 14.7565) + ofs,
+				_V(0.4227, 2.0984, 14.6968) + ofs, _V(0.9362, 2.0984, 14.6968) + ofs);
+		}
+		else
+		{
+			oapiVCRegisterArea(AID_F8, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED);
+			oapiVCSetAreaClickmode_Quadrilateral(AID_F8,
+				_V(0.415603, 2.320348, 14.773583) + ofs, _V(0.942375, 2.320348, 14.773585) + ofs,
+				_V(0.415603, 1.951080, 14.674603) + ofs, _V(0.942375, 1.951079, 14.674605) + ofs);
+
+			oapiVCRegisterArea(AID_F8_MDU, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED);
+			oapiVCSetAreaClickmode_Quadrilateral(AID_F8_MDU,
+				_V(0.4227, 2.3119, 15.4043) + ofs, _V(0.9362, 2.3119, 15.4043) + ofs,
+				_V(0.4227, 2.0984, 15.4043) + ofs, _V(0.9362, 2.0984, 15.4043) + ofs);
+		}
 
 		oapiVCRegisterArea( AID_F8_HUD, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED );
 		oapiVCSetAreaClickmode_Quadrilateral( AID_F8_HUD,
@@ -374,363 +478,369 @@ namespace vc {
 
 	void PanelF8::OnPreStep(double simt, double simdt, double mjd)
 	{
-		int MM = STS()->GetGPCMajorMode();
-		VECTOR3 atterr;
-		//ADI
-		VECTOR3 av;// x = pitch, y = yaw, z = roll
-		STS()->GetAngularVel(av);
-		av *= DEG;
-		av.z = -av.z;
-		av.x = -av.x;
-
-		switch (MM)
+		if (!bHasMEDS)
 		{
-		case 101:
-		case 102:
-		case 103:
-		case 104:
-		case 105:
-		case 106:
-			atterr = pPLT1->GetIDP()->GetAttitudeErrors_AscentDAP();
-			break;
-		case 201:
-		case 202:
-		case 801:
-			atterr = pPLT1->GetIDP()->GetAttitudeCommandErrors();
-			break;
-		case 301:
-		case 302:
-		case 303:
-		case 304:
-		case 305:
-			atterr = pPLT1->GetIDP()->GetAttitudeErrors_AerojetDAP();
-			break;
-		case 601:
-			atterr = pPLT1->GetIDP()->GetAttitudeErrors_AscentDAP();
-			break;
-		case 602:
-		case 603:
-		case 901:
-			atterr = pPLT1->GetIDP()->GetAttitudeErrors_AerojetDAP();
-			break;
-			break;
-		default:
-			break;
-		}
+			int MM = STS()->GetGPCMajorMode();
+			VECTOR3 atterr;
+			//ADI
+			VECTOR3 av;// x = pitch, y = yaw, z = roll
+			STS()->GetAngularVel(av);
+			av *= DEG;
+			av.z = -av.z;
+			av.x = -av.x;
 
-		double attRoll = -STS()->GetBank();
-		double attPitch = STS()->GetPitch();
-		double attYaw = STS()->GetSlipAngle();
-
-		if (cos(attRoll) < 0) attYaw = -attYaw;
-
-		if (attRoll >= PI2) attRoll -= PI2;
-		if (attRoll < 0) attRoll += PI2;
-
-		if (attPitch >= PI2) attPitch -= PI2;
-		if (attPitch < 0) attPitch += PI2;
-
-		if (attYaw >= PI2) attYaw -= PI2;
-		if (attYaw < 0) attYaw += PI2;
-
-		STS()->SetAnimation(anim_adiR, attRoll / 360.0 * DEG);
-		STS()->SetAnimation(anim_adiP, attPitch / 360.0 * DEG);
-		STS()->SetAnimation(anim_adiY, attYaw / 360.0 * DEG);
-
-		// Rate needles
-		int adirate = pPLT1->GetIDP()->GetADIRate();
-		double maxRate = (adirate == 1) ? 5.0 : (adirate == 2) ? 10.0 : 1.0;
-
-		STS()->SetAnimation(anim_needle_RollRateCDR, max(0.0, min(1.0, 0.5 + av.z / (2.0 * maxRate))));
-		STS()->SetAnimation(anim_needle_PitchRateCDR, max(0.0, min(1.0, 0.5 + av.x / (2.0 * maxRate))));
-		STS()->SetAnimation(anim_needle_YawRateCDR, max(0.0, min(1.0, 0.5 + av.y / (2.0 * maxRate))));
-
-		// Error needles
-		int adierr = pPLT1->GetIDP()->GetADIError();
-		double maxRate2 = (adierr == 1) ? 5.0 : (adierr == 2) ? 10.0 : 1.0;
-
-		STS()->SetAnimation(anim_needle_RollErrorCDR, max(0.0, min(1.0, 0.5 + atterr.z / (2.0 * maxRate2))));
-		STS()->SetAnimation(anim_needle_PitchErrorCDR, max(0.0, min(1.0, 0.5 + atterr.x / (2.0 * maxRate2))));
-		STS()->SetAnimation(anim_needle_YawErrorCDR, max(0.0, min(1.0, 0.5 + atterr.y / (2.0 * maxRate2))));
-
-		// Tapemeters
-		// Alpha
-		double alpha = STS()->GetAOA() * DEG;
-
-		auto updateAlpha = [&](DWORD group, const std::vector<NTVERTEX>& originalVtx, const std::vector<float>& originalTV, std::vector<WORD>& idx, DWORD nVtx, double minAlpha, double maxAlpha, float range)
+			switch (MM)
 			{
-				if (!hF8_dev || originalVtx.empty()) return;
+			case 101:
+			case 102:
+			case 103:
+			case 104:
+			case 105:
+			case 106:
+				atterr = pPLT1->GetIDP()->GetAttitudeErrors_AscentDAP();
+				break;
+			case 201:
+			case 202:
+			case 801:
+				atterr = pPLT1->GetIDP()->GetAttitudeCommandErrors();
+				break;
+			case 301:
+			case 302:
+			case 303:
+			case 304:
+			case 305:
+				atterr = pPLT1->GetIDP()->GetAttitudeErrors_AerojetDAP();
+				break;
+			case 601:
+				atterr = pPLT1->GetIDP()->GetAttitudeErrors_AscentDAP();
+				break;
+			case 602:
+			case 603:
+			case 901:
+				atterr = pPLT1->GetIDP()->GetAttitudeErrors_AerojetDAP();
+				break;
+				break;
+			default:
+				break;
+			}
+
+			double attRoll = -STS()->GetBank();
+			double attPitch = STS()->GetPitch();
+			double attYaw = STS()->GetSlipAngle();
+
+			if (cos(attRoll) < 0) attYaw = -attYaw;
+
+			if (attRoll >= PI2) attRoll -= PI2;
+			if (attRoll < 0) attRoll += PI2;
+
+			if (attPitch >= PI2) attPitch -= PI2;
+			if (attPitch < 0) attPitch += PI2;
+
+			if (attYaw >= PI2) attYaw -= PI2;
+			if (attYaw < 0) attYaw += PI2;
+
+			STS()->SetAnimation(anim_adiR, attRoll / 360.0 * DEG);
+			STS()->SetAnimation(anim_adiP, attPitch / 360.0 * DEG);
+			STS()->SetAnimation(anim_adiY, attYaw / 360.0 * DEG);
+
+			// Rate needles
+			int adirate = pPLT1->GetIDP()->GetADIRate();
+			double maxRate = (adirate == 1) ? 5.0 : (adirate == 2) ? 10.0 : 1.0;
+
+			STS()->SetAnimation(anim_needle_RollRateCDR, max(0.0, min(1.0, 0.5 + av.z / (2.0 * maxRate))));
+			STS()->SetAnimation(anim_needle_PitchRateCDR, max(0.0, min(1.0, 0.5 + av.x / (2.0 * maxRate))));
+			STS()->SetAnimation(anim_needle_YawRateCDR, max(0.0, min(1.0, 0.5 + av.y / (2.0 * maxRate))));
+
+			// Error needles
+			int adierr = pPLT1->GetIDP()->GetADIError();
+			double maxRate2 = (adierr == 1) ? 5.0 : (adierr == 2) ? 10.0 : 1.0;
+
+			STS()->SetAnimation(anim_needle_RollErrorCDR, max(0.0, min(1.0, 0.5 + atterr.z / (2.0 * maxRate2))));
+			STS()->SetAnimation(anim_needle_PitchErrorCDR, max(0.0, min(1.0, 0.5 + atterr.x / (2.0 * maxRate2))));
+			STS()->SetAnimation(anim_needle_YawErrorCDR, max(0.0, min(1.0, 0.5 + atterr.y / (2.0 * maxRate2))));
+
+			// Tapemeters
+			// Alpha
+			double alpha = STS()->GetAOA() * DEG;
+
+			auto updateAlpha = [&](DWORD group, const std::vector<NTVERTEX>& originalVtx, const std::vector<float>& originalTV, std::vector<WORD>& idx, DWORD nVtx, double minAlpha, double maxAlpha, float range)
+				{
+					if (!hF8_dev || originalVtx.empty()) return;
+
+					GROUPEDITSPEC ges = {};
+					ges.flags = GRPEDIT_VTXTEX;
+					ges.nVtx = nVtx;
+
+					std::vector<NTVERTEX> vtx = originalVtx;
+					double limitedAlpha = (alpha < minAlpha && alpha < maxAlpha) ? ((minAlpha < maxAlpha) ? minAlpha : maxAlpha) : ((alpha > minAlpha && alpha > maxAlpha) ? ((minAlpha > maxAlpha) ? minAlpha : maxAlpha) : alpha);
+					float dy = (range / 1719.0f) * static_cast<float>((limitedAlpha - minAlpha) / (maxAlpha - minAlpha));
+
+					for (DWORD i = 0; i < ges.nVtx; i++)
+						vtx[i].tv = originalTV[i] - dy;
+
+					ges.Vtx = vtx.data();
+					ges.vIdx = idx.data();
+
+					oapiEditMeshGroup(hF8_dev, group, &ges);
+				};
+
+			updateAlpha(88, alpha1Vtx, alpha1TV, alpha1Idx, alpha1Edit.nVtx, 28.0, 60.0, 255.76f);
+			updateAlpha(80, alpha2Vtx, alpha2TV, alpha2Idx, alpha2Edit.nVtx, -4.0, -25.0, -168.2);
+
+			////Accel tapemeter
+			//if (hF6_dev && !accelVtx.empty())
+			//{
+			//	GROUPEDITSPEC ges = {};
+			//	ges.flags = GRPEDIT_VTXTEX;
+			//	ges.nVtx = accelEdit.nVtx;
+
+			//	std::vector<NTVERTEX> vtx = accelVtx;
+			//	double limitedAccel = (alpha < -25.0) ? -25.0 : ((alpha > -4.0) ? -4.0 : alpha);
+			//	float dy = (-200.0f / 2048.0f) * static_cast<float>((limitedAccel + 4.0) / -21.0);
+
+			//	for (DWORD i = 0; i < ges.nVtx; i++)
+			//		vtx[i].tv = accelTV[i] - dy;
+
+			//	ges.Vtx = vtx.data();
+			//	ges.vIdx = accelIdx.data();
+
+			//	oapiEditMeshGroup(hF6_dev, 76, &ges);
+			//}
+
+			// Mach tapemeter
+			if (hF8_dev && !mVtx.empty())
+			{
+				OBJHANDLE hEarth = STS()->GetGravityRef();
+				VECTOR3 ECEF_vel = GetVelocity_ECEF(STS(), hEarth) * MPS2FPS;
+				double VE = length(ECEF_vel);
+
+				VECTOR3 v3vi;
+				STS()->GetRelativeVel(STS()->GetSurfaceRef(), v3vi);
+				double vi = length(v3vi) * MPS2FPS;
+
+				double mach = STS()->GetMachNumber();
 
 				GROUPEDITSPEC ges = {};
 				ges.flags = GRPEDIT_VTXTEX;
-				ges.nVtx = nVtx;
+				ges.nVtx = mEdit.nVtx;
 
-				std::vector<NTVERTEX> vtx = originalVtx;
-				double limitedAlpha = (alpha < minAlpha && alpha < maxAlpha) ? ((minAlpha < maxAlpha) ? minAlpha : maxAlpha) : ((alpha > minAlpha && alpha > maxAlpha) ? ((minAlpha > maxAlpha) ? minAlpha : maxAlpha) : alpha);
-				float dy = (range / 1719.0f) * static_cast<float>((limitedAlpha - minAlpha) / (maxAlpha - minAlpha));
+				std::vector<NTVERTEX> vtx = mVtx;
+				double dy;
+
+				if (mach < 4.0)
+					dy = (1438 / 4.0) * ((mach < 0.0) ? 0.0 : mach);
+				else
+					dy = 1692.0 + (vi - 4500.0) * ((9432.34 - 1692.0) / (26000.0 - 4500.0));
+
+				if (dy < 0.0) dy = 0.0;
+				if (dy > 9432.34) dy = 9432.34;
+
+				float uvOffset = static_cast<float>(dy / 9845);
 
 				for (DWORD i = 0; i < ges.nVtx; i++)
-					vtx[i].tv = originalTV[i] - dy;
+					vtx[i].tv = mTV[i] - uvOffset;
 
 				ges.Vtx = vtx.data();
-				ges.vIdx = idx.data();
+				ges.vIdx = mIdx.data();
 
-				oapiEditMeshGroup(hF8_dev, group, &ges);
-			};
-
-		updateAlpha(88, alpha1Vtx, alpha1TV, alpha1Idx, alpha1Edit.nVtx, 28.0, 60.0, 255.76f);
-		updateAlpha(80, alpha2Vtx, alpha2TV, alpha2Idx, alpha2Edit.nVtx, -4.0, -25.0, -168.2);
-
-		////Accel tapemeter
-		//if (hF6_dev && !accelVtx.empty())
-		//{
-		//	GROUPEDITSPEC ges = {};
-		//	ges.flags = GRPEDIT_VTXTEX;
-		//	ges.nVtx = accelEdit.nVtx;
-
-		//	std::vector<NTVERTEX> vtx = accelVtx;
-		//	double limitedAccel = (alpha < -25.0) ? -25.0 : ((alpha > -4.0) ? -4.0 : alpha);
-		//	float dy = (-200.0f / 2048.0f) * static_cast<float>((limitedAccel + 4.0) / -21.0);
-
-		//	for (DWORD i = 0; i < ges.nVtx; i++)
-		//		vtx[i].tv = accelTV[i] - dy;
-
-		//	ges.Vtx = vtx.data();
-		//	ges.vIdx = accelIdx.data();
-
-		//	oapiEditMeshGroup(hF6_dev, 76, &ges);
-		//}
-
-		// Mach tapemeter
-		if (hF8_dev && !mVtx.empty())
-		{
-			OBJHANDLE hEarth = STS()->GetGravityRef();
-			VECTOR3 ECEF_vel = GetVelocity_ECEF(STS(), hEarth) * MPS2FPS;
-			double VE = length(ECEF_vel);
-
-			VECTOR3 v3vi;
-			STS()->GetRelativeVel(STS()->GetSurfaceRef(), v3vi);
-			double vi = length(v3vi) * MPS2FPS;
-
-			double mach = STS()->GetMachNumber();
-
-			GROUPEDITSPEC ges = {};
-			ges.flags = GRPEDIT_VTXTEX;
-			ges.nVtx = mEdit.nVtx;
-
-			std::vector<NTVERTEX> vtx = mVtx;
-			double dy;
-
-			if (mach < 4.0)
-				dy = (1438 / 4.0) * ((mach < 0.0) ? 0.0 : mach);
-			else
-				dy = 1692.0 + (vi - 4500.0) * ((9432.34 - 1692.0) / (26000.0 - 4500.0));
-
-			if (dy < 0.0) dy = 0.0;
-			if (dy > 9432.34) dy = 9432.34;
-
-			float uvOffset = static_cast<float>(dy / 9845);
-
-			for (DWORD i = 0; i < ges.nVtx; i++)
-				vtx[i].tv = mTV[i] - uvOffset;
-
-			ges.Vtx = vtx.data();
-			ges.vIdx = mIdx.data();
-
-			oapiEditMeshGroup(hF8_dev, 77, &ges);
-		}
-
-		//KT tapemeter
-		if (hF8_dev && !ktVtx.empty())
-		{
-			VECTOR3 vel;
-			STS()->GetAirspeedVector(FRAME_LOCAL, vel);
-			double airspeed = length(vel) * 1.943844; // knots (kt)
-
-			GROUPEDITSPEC ges = {};
-			ges.flags = GRPEDIT_VTXTEX;
-			ges.nVtx = ktEdit.nVtx;
-
-			std::vector<NTVERTEX> vtx = ktVtx;
-			double limitedkt = (airspeed < 0.0) ? 0.0 : ((airspeed > 500) ? 500 : airspeed);
-			float dy = (-3600.0f / 4069.0f) * static_cast<float>((limitedkt + 0.0) / 500);
-
-			for (DWORD i = 0; i < ges.nVtx; i++)
-				vtx[i].tv = ktTV[i] - dy;
-
-			ges.Vtx = vtx.data();
-			ges.vIdx = ktIdx.data();
-
-			oapiEditMeshGroup(hF8_dev, 78, &ges);
-		}
-
-		//Hdot tapemeter
-		if (hF8_dev && !hdotVtx.empty())
-		{
-			VECTOR3 vel;
-			STS()->GetGroundspeedVector(FRAME_HORIZON, vel);
-			vel *= MPS2FPS;
-
-			GROUPEDITSPEC ges = {};
-			ges.flags = GRPEDIT_VTXTEX;
-			ges.nVtx = hdotEdit.nVtx;
-
-			std::vector<NTVERTEX> vtx = hdotVtx;
-			double limitedhdot = (vel.y < -740.0) ? -740.0 : ((vel.y > 740.0) ? 740.0 : vel.y);
-			float dy = (limitedhdot >= 0.0)
-				? (5325.0f / 10860.0f) * static_cast<float>(limitedhdot / 740.0)
-				: -(5331.0f / 10860.0f) * static_cast<float>(-limitedhdot / 740.0);
-
-			for (DWORD i = 0; i < ges.nVtx; i++)
-				vtx[i].tv = hdotTV[i] - dy;
-
-			ges.Vtx = vtx.data();
-			ges.vIdx = hdotIdx.data();
-
-			oapiEditMeshGroup(hF8_dev, 81, &ges);
-		}
-
-		//Alt tapemeter
-		if (hF8_dev && !altVtx.empty())
-		{
-			double Altitude_ft = STS()->GetAltitude() * MPS2FPS;
-
-			GROUPEDITSPEC ges = {};
-			ges.flags = GRPEDIT_VTXTEX;
-			ges.nVtx = altEdit.nVtx;
-
-			std::vector<NTVERTEX> vtx = altVtx;
-
-			const double altScale[][2] = {
-				{0.0, 0.0},
-				{50.0, -35.5},
-				{100.0, -73.5},
-				{1000.0, -406.5},
-				{1200.0, -444.5},
-				{2000.0, -593.0},
-				{3000.0, -628.5},
-				{100000.0, -4218.5},
-				{250000.0, -4363.8},
-				{400000.0, -4808.23},
-				{70.0 * 6076.11549, -4957.45},
-				{165.0 * 6076.11549, -7769.5}
-			};
-
-			const int n = sizeof(altScale) / sizeof(altScale[0]);
-			double dy = altScale[n - 1][1];
-
-			if (Altitude_ft <= altScale[0][0])
-				dy = altScale[0][1];
-			else
-			{
-				for (int i = 1; i < n; i++)
-				{
-					if (Altitude_ft <= altScale[i][0])
-					{
-						double t = (Altitude_ft - altScale[i - 1][0]) / (altScale[i][0] - altScale[i - 1][0]);
-						dy = altScale[i - 1][1] + t * (altScale[i][1] - altScale[i - 1][1]);
-						break;
-					}
-				}
+				oapiEditMeshGroup(hF8_dev, 77, &ges);
 			}
 
-			float uvOffset = -static_cast<float>(dy / 9295.0);
+			//KT tapemeter
+			if (hF8_dev && !ktVtx.empty())
+			{
+				VECTOR3 vel;
+				STS()->GetAirspeedVector(FRAME_LOCAL, vel);
+				double airspeed = length(vel) * 1.943844; // knots (kt)
 
-			for (DWORD i = 0; i < ges.nVtx; i++)
-				vtx[i].tv = altTV[i] + uvOffset;
+				GROUPEDITSPEC ges = {};
+				ges.flags = GRPEDIT_VTXTEX;
+				ges.nVtx = ktEdit.nVtx;
 
-			ges.Vtx = vtx.data();
-			ges.vIdx = altIdx.data();
+				std::vector<NTVERTEX> vtx = ktVtx;
+				double limitedkt = (airspeed < 0.0) ? 0.0 : ((airspeed > 500) ? 500 : airspeed);
+				float dy = (-3600.0f / 4069.0f) * static_cast<float>((limitedkt + 0.0) / 500);
 
-			oapiEditMeshGroup(hF8_dev, 82, &ges);
+				for (DWORD i = 0; i < ges.nVtx; i++)
+					vtx[i].tv = ktTV[i] - dy;
+
+				ges.Vtx = vtx.data();
+				ges.vIdx = ktIdx.data();
+
+				oapiEditMeshGroup(hF8_dev, 78, &ges);
+			}
+
+			//Hdot tapemeter
+			if (hF8_dev && !hdotVtx.empty())
+			{
+				VECTOR3 vel;
+				STS()->GetGroundspeedVector(FRAME_HORIZON, vel);
+				vel *= MPS2FPS;
+
+				GROUPEDITSPEC ges = {};
+				ges.flags = GRPEDIT_VTXTEX;
+				ges.nVtx = hdotEdit.nVtx;
+
+				std::vector<NTVERTEX> vtx = hdotVtx;
+				double limitedhdot = (vel.y < -740.0) ? -740.0 : ((vel.y > 740.0) ? 740.0 : vel.y);
+				float dy = (limitedhdot >= 0.0)
+					? (5325.0f / 10860.0f) * static_cast<float>(limitedhdot / 740.0)
+					: -(5331.0f / 10860.0f) * static_cast<float>(-limitedhdot / 740.0);
+
+				for (DWORD i = 0; i < ges.nVtx; i++)
+					vtx[i].tv = hdotTV[i] - dy;
+
+				ges.Vtx = vtx.data();
+				ges.vIdx = hdotIdx.data();
+
+				oapiEditMeshGroup(hF8_dev, 81, &ges);
+			}
+
+			//Alt tapemeter
+			if (hF8_dev && !altVtx.empty())
+			{
+				double Altitude_ft = STS()->GetAltitude() * MPS2FPS;
+
+				GROUPEDITSPEC ges = {};
+				ges.flags = GRPEDIT_VTXTEX;
+				ges.nVtx = altEdit.nVtx;
+
+				std::vector<NTVERTEX> vtx = altVtx;
+
+				const double altScale[][2] = {
+					{0.0, 0.0},
+					{50.0, -35.5},
+					{100.0, -73.5},
+					{1000.0, -406.5},
+					{1200.0, -444.5},
+					{2000.0, -593.0},
+					{3000.0, -628.5},
+					{100000.0, -4218.5},
+					{250000.0, -4363.8},
+					{400000.0, -4808.23},
+					{70.0 * 6076.11549, -4957.45},
+					{165.0 * 6076.11549, -7769.5}
+				};
+
+				const int n = sizeof(altScale) / sizeof(altScale[0]);
+				double dy = altScale[n - 1][1];
+
+				if (Altitude_ft <= altScale[0][0])
+					dy = altScale[0][1];
+				else
+				{
+					for (int i = 1; i < n; i++)
+					{
+						if (Altitude_ft <= altScale[i][0])
+						{
+							double t = (Altitude_ft - altScale[i - 1][0]) / (altScale[i][0] - altScale[i - 1][0]);
+							dy = altScale[i - 1][1] + t * (altScale[i][1] - altScale[i - 1][1]);
+							break;
+						}
+					}
+				}
+
+				float uvOffset = -static_cast<float>(dy / 9295.0);
+
+				for (DWORD i = 0; i < ges.nVtx; i++)
+					vtx[i].tv = altTV[i] + uvOffset;
+
+				ges.Vtx = vtx.data();
+				ges.vIdx = altIdx.data();
+
+				oapiEditMeshGroup(hF8_dev, 82, &ges);
+			}
+
+			//Alpha needle
+			double limitedAlpha = (alpha < -4.0) ? -4.0 : ((alpha > 28.0) ? 28.0 : alpha);
+			STS()->SetAnimation(anim_needle_alpha, (limitedAlpha + 4.0) / 32.0);
+
+			//Alt needle
+			int altAcc = pPLT1->GetIDP()->GetVacc();
+			double limitedAlt = (altAcc < -10.0) ? -10.0 : ((altAcc > 10.0) ? 10.0 : altAcc);
+			STS()->SetAnimation(anim_needle_alt, (limitedAlt + 10.0) / 20.0);
+
+			//HYDRAULIC
+			unsigned short Qty[3];
+			unsigned short Press[3];
+			pPLT1->GetIDP()->GetHYDdata(Qty[0], Qty[1], Qty[2], Press[0], Press[1], Press[2]);
+
+			for (int i = 0; i < 3; i++) if (Qty[i] > 100.0) Qty[i] = 100.0;
+
+			STS()->SetAnimation(anim_needle_hyd_qty_1, Qty[0] / 100.0);
+			STS()->SetAnimation(anim_needle_hyd_qty_2, Qty[1] / 100.0);
+			STS()->SetAnimation(anim_needle_hyd_qty_3, Qty[2] / 100.0);
+
+			for (int i = 0; i < 3; i++) if (Press[i] > 4000.0) Press[i] = 4000.0;
+
+			STS()->SetAnimation(anim_needle_hyd_press_1, Press[0] / 4000.0);
+			STS()->SetAnimation(anim_needle_hyd_press_2, Press[1] / 4000.0);
+			STS()->SetAnimation(anim_needle_hyd_press_3, Press[2] / 4000.0);
+
+			//APU
+			unsigned short FuQty[3];
+			unsigned short Fu_Press[3];
+			unsigned short H2OQty[3];
+			unsigned short OilIn[3];
+			pPLT1->GetIDP()->GetAPUdata(FuQty[0], FuQty[1], FuQty[2], Fu_Press[0], Fu_Press[1], Fu_Press[2], H2OQty[0], H2OQty[1], H2OQty[2], OilIn[0], OilIn[1], OilIn[2]);
+
+			for (int i = 0; i < 3; i++) if (FuQty[i] > 100.0) FuQty[i] = 100.0;
+			STS()->SetAnimation(anim_needle_fuel_qty_1, FuQty[0] / 100.0);
+			STS()->SetAnimation(anim_needle_fuel_qty_2, FuQty[1] / 100.0);
+			STS()->SetAnimation(anim_needle_fuel_qty_3, FuQty[2] / 100.0);
+
+			for (int i = 0; i < 3; i++) if (Fu_Press[i] > 500.0) Fu_Press[i] = 500.0;
+			STS()->SetAnimation(anim_needle_apu_fuel_press, Fu_Press[0] / 500.0);
+
+			for (int i = 0; i < 3; i++) if (OilIn[i] > 500.0) OilIn[i] = 500.0;
+			STS()->SetAnimation(anim_needle_apu_oil_temp, OilIn[0] / 500.0);
+
+			//sprintf(oapiDebugString(), "Fu_Press:%i", Fu_Press[0]);
 		}
-
-		//Alpha needle
-		double limitedAlpha = (alpha < -4.0) ? -4.0 : ((alpha > 28.0) ? 28.0 : alpha);
-		STS()->SetAnimation(anim_needle_alpha, (limitedAlpha + 4.0) / 32.0);
-
-		//Alt needle
-		int altAcc = pPLT1->GetIDP()->GetVacc();
-		double limitedAlt = (altAcc < -10.0) ? -10.0 : ((altAcc > 10.0) ? 10.0 : altAcc);
-		STS()->SetAnimation(anim_needle_alt, (limitedAlt + 10.0) / 20.0);
-
-		//HYDRAULIC
-		unsigned short Qty[3];
-		unsigned short Press[3];
-		pPLT1->GetIDP()->GetHYDdata(Qty[0], Qty[1], Qty[2], Press[0], Press[1], Press[2]);
-
-		for (int i = 0; i < 3; i++) if (Qty[i] > 100.0) Qty[i] = 100.0;
-
-		STS()->SetAnimation(anim_needle_hyd_qty_1, Qty[0] / 100.0);
-		STS()->SetAnimation(anim_needle_hyd_qty_2, Qty[1] / 100.0);
-		STS()->SetAnimation(anim_needle_hyd_qty_3, Qty[2] / 100.0);
-
-		for (int i = 0; i < 3; i++) if (Press[i] > 4000.0) Press[i] = 4000.0;
-
-		STS()->SetAnimation(anim_needle_hyd_press_1, Press[0] / 4000.0);
-		STS()->SetAnimation(anim_needle_hyd_press_2, Press[1] / 4000.0);
-		STS()->SetAnimation(anim_needle_hyd_press_3, Press[2] / 4000.0);
-
-		//APU
-		unsigned short FuQty[3];
-		unsigned short Fu_Press[3];
-		unsigned short H2OQty[3];
-		unsigned short OilIn[3];
-		pPLT1->GetIDP()->GetAPUdata(FuQty[0], FuQty[1], FuQty[2], Fu_Press[0], Fu_Press[1], Fu_Press[2], H2OQty[0], H2OQty[1], H2OQty[2], OilIn[0], OilIn[1], OilIn[2]);
-
-		for (int i = 0; i < 3; i++) if (FuQty[i] > 100.0) FuQty[i] = 100.0;
-		STS()->SetAnimation(anim_needle_fuel_qty_1, FuQty[0] / 100.0);
-		STS()->SetAnimation(anim_needle_fuel_qty_2, FuQty[1] / 100.0);
-		STS()->SetAnimation(anim_needle_fuel_qty_3, FuQty[2] / 100.0);
-
-		for (int i = 0; i < 3; i++) if (Fu_Press[i] > 500.0) Fu_Press[i] = 500.0;
-		STS()->SetAnimation(anim_needle_apu_fuel_press, Fu_Press[0] / 500.0);
-
-		for (int i = 0; i < 3; i++) if (OilIn[i] > 500.0) OilIn[i] = 500.0;
-		STS()->SetAnimation(anim_needle_apu_oil_temp, OilIn[0] / 500.0);
-
-		//sprintf(oapiDebugString(), "Fu_Press:%i", Fu_Press[0]);
 	}
 
 	void PanelF8::VisualCreated()
 	{
-		hF8_dev = STS()->GetDevMesh(STS()->Get_vis(), GetVCMeshIndex());
+		if (!bHasMEDS)
+		{
+			hF8_dev = STS()->GetDevMesh(STS()->Get_vis(), GetVCMeshIndex());
 
-		MESHGROUP* gAlpha1 = oapiMeshGroup(GetVCMeshHandle(), 88);
-		MESHGROUP* gAlpha2 = oapiMeshGroup(GetVCMeshHandle(), 80);
-		MESHGROUP* gAccel = oapiMeshGroup(GetVCMeshHandle(), 76);
-		MESHGROUP* gM = oapiMeshGroup(GetVCMeshHandle(), 77);
-		MESHGROUP* gKT = oapiMeshGroup(GetVCMeshHandle(), 78);
-		MESHGROUP* gHdot = oapiMeshGroup(GetVCMeshHandle(), 81);
-		MESHGROUP* gAlt = oapiMeshGroup(GetVCMeshHandle(), 82);
+			MESHGROUP* gAlpha1 = oapiMeshGroup(GetVCMeshHandle(), 88);
+			MESHGROUP* gAlpha2 = oapiMeshGroup(GetVCMeshHandle(), 80);
+			MESHGROUP* gAccel = oapiMeshGroup(GetVCMeshHandle(), 76);
+			MESHGROUP* gM = oapiMeshGroup(GetVCMeshHandle(), 77);
+			MESHGROUP* gKT = oapiMeshGroup(GetVCMeshHandle(), 78);
+			MESHGROUP* gHdot = oapiMeshGroup(GetVCMeshHandle(), 81);
+			MESHGROUP* gAlt = oapiMeshGroup(GetVCMeshHandle(), 82);
 
-		if (!hF8_dev || !gAlpha1 || !gAlpha2 || !gAccel || !gM || !gKT || !gHdot || !gAlt) return;
+			if (!hF8_dev || !gAlpha1 || !gAlpha2 || !gAccel || !gM || !gKT || !gHdot || !gAlt) return;
 
-		auto initVTX = [](MESHGROUP* g, std::vector<NTVERTEX>& vtx, std::vector<float>& tv, std::vector<WORD>& idx, GROUPEDITSPEC& edit)
-			{
-				vtx.assign(g->Vtx, g->Vtx + g->nVtx);
-				tv.resize(g->nVtx);
-				idx.resize(g->nVtx);
-
-				for (DWORD i = 0; i < g->nVtx; i++)
+			auto initVTX = [](MESHGROUP* g, std::vector<NTVERTEX>& vtx, std::vector<float>& tv, std::vector<WORD>& idx, GROUPEDITSPEC& edit)
 				{
-					tv[i] = g->Vtx[i].tv;
-					idx[i] = static_cast<WORD>(i);
-				}
+					vtx.assign(g->Vtx, g->Vtx + g->nVtx);
+					tv.resize(g->nVtx);
+					idx.resize(g->nVtx);
 
-				edit.flags = GRPEDIT_VTXTEXV;
-				edit.nVtx = g->nVtx;
-				edit.Vtx = vtx.data();
-				edit.vIdx = idx.data();
-			};
+					for (DWORD i = 0; i < g->nVtx; i++)
+					{
+						tv[i] = g->Vtx[i].tv;
+						idx[i] = static_cast<WORD>(i);
+					}
 
-		initVTX(gAlpha1, alpha1Vtx, alpha1TV, alpha1Idx, alpha1Edit);
-		initVTX(gAlpha2, alpha2Vtx, alpha2TV, alpha2Idx, alpha2Edit);
-		initVTX(gAccel, accelVtx, accelTV, accelIdx, accelEdit);
-		initVTX(gM, mVtx, mTV, mIdx, mEdit);
-		initVTX(gKT, ktVtx, ktTV, ktIdx, ktEdit);
-		initVTX(gHdot, hdotVtx, hdotTV, hdotIdx, hdotEdit);
-		initVTX(gAlt, altVtx, altTV, altIdx, altEdit);
+					edit.flags = GRPEDIT_VTXTEXV;
+					edit.nVtx = g->nVtx;
+					edit.Vtx = vtx.data();
+					edit.vIdx = idx.data();
+				};
+
+			initVTX(gAlpha1, alpha1Vtx, alpha1TV, alpha1Idx, alpha1Edit);
+			initVTX(gAlpha2, alpha2Vtx, alpha2TV, alpha2Idx, alpha2Edit);
+			initVTX(gAccel, accelVtx, accelTV, accelIdx, accelEdit);
+			initVTX(gM, mVtx, mTV, mIdx, mEdit);
+			initVTX(gKT, ktVtx, ktTV, ktIdx, ktEdit);
+			initVTX(gHdot, hdotVtx, hdotTV, hdotIdx, hdotEdit);
+			initVTX(gAlt, altVtx, altTV, altIdx, altEdit);
+		}
 	}
 
 }

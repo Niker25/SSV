@@ -12,6 +12,7 @@ Date         Developer
 #include "MDU.h"
 #include "../Atlantis.h"
 #include "../dps/IDP.h"
+#include "../mission/Mission.h"
 
 
 extern GDIParams g_Param;
@@ -60,13 +61,15 @@ namespace vc
 						if ((textBuffer[i][j].cAttr & dps::DEUATT_OVERBRIGHT) != 0)
 						{
 							// overbright intensity
-							BitBlt( hDC, i * 10, j * 14 + DPS_DISPLAY_VERTICAL_OFFSET, 10, 14, g_Param.DeuCharOvrBrgtBitmapDC, (int)(x * 0.555555), (int)(y * 0.5), SRCCOPY );
+							if (STS()->pMission->HasMEDS()) BitBlt( hDC, i * 10, j * 14 + DPS_DISPLAY_VERTICAL_OFFSET, 10, 14, g_Param.DeuCharOvrBrgtBitmapDC, (int)(x * 0.555555), (int)(y * 0.5), SRCCOPY );
+							else BitBlt(hDC, i * 10, j * 14 + DPS_DISPLAY_VERTICAL_OFFSET, 10, 14, g_Param.DeuCharOvrBrgtBitmapDC_MCD, (int)(x * 0.555555), (int)(y * 0.5), SRCCOPY);
 						}
 						else
 						{
 							// default
 							// normal intensity
-							BitBlt( hDC, i * 10, j * 14 + DPS_DISPLAY_VERTICAL_OFFSET, 10, 14, g_Param.DeuCharBitmapDC, (int)(x * 0.555555), (int)(y * 0.5), SRCCOPY );
+							if (STS()->pMission->HasMEDS()) BitBlt( hDC, i * 10, j * 14 + DPS_DISPLAY_VERTICAL_OFFSET, 10, 14, g_Param.DeuCharBitmapDC, (int)(x * 0.555555), (int)(y * 0.5), SRCCOPY );
+							else BitBlt(hDC, i * 10, j * 14 + DPS_DISPLAY_VERTICAL_OFFSET, 10, 14, g_Param.DeuCharBitmapDC_MCD, (int)(x * 0.555555), (int)(y * 0.5), SRCCOPY);
 						}
 					}
 				}
@@ -83,7 +86,8 @@ namespace vc
 					int x, y;
 					vc::BitmapLocation( textBuffer[i][24].cSymbol, x, y );
 
-					BitBlt( hDC, i * 10, 24 * 14 + DPS_DISPLAY_VERTICAL_OFFSET, 10, 14, g_Param.DeuCharFaultBitmapDC, (int)(x * 0.555555), (int)(y * 0.5), SRCCOPY );
+					if (STS()->pMission->HasMEDS()) BitBlt( hDC, i * 10, 24 * 14 + DPS_DISPLAY_VERTICAL_OFFSET, 10, 14, g_Param.DeuCharFaultBitmapDC, (int)(x * 0.555555), (int)(y * 0.5), SRCCOPY );
+					else BitBlt(hDC, i * 10, 24 * 14 + DPS_DISPLAY_VERTICAL_OFFSET, 10, 14, g_Param.DeuCharFaultBitmapDC_MCD, (int)(x * 0.555555), (int)(y * 0.5), SRCCOPY);
 				}
 			}
 		}
@@ -98,7 +102,8 @@ namespace vc
 					int x, y;
 					vc::BitmapLocation( textBuffer[i][25].cSymbol, x, y );
 
-					BitBlt( hDC, i * 10, 25 * 14 + DPS_DISPLAY_VERTICAL_OFFSET, 10, 14, g_Param.DeuCharBitmapDC, (int)(x * 0.555555), (int)(y * 0.5), SRCCOPY );
+					if (STS()->pMission->HasMEDS()) BitBlt( hDC, i * 10, 25 * 14 + DPS_DISPLAY_VERTICAL_OFFSET, 10, 14, g_Param.DeuCharBitmapDC, (int)(x * 0.555555), (int)(y * 0.5), SRCCOPY );
+					else BitBlt(hDC, i * 10, 25 * 14 + DPS_DISPLAY_VERTICAL_OFFSET, 10, 14, g_Param.DeuCharBitmapDC_MCD, (int)(x * 0.555555), (int)(y * 0.5), SRCCOPY);
 				}
 			}
 		}
@@ -187,7 +192,8 @@ namespace vc
 							tgt.top = j * 14 + DPS_DISPLAY_VERTICAL_OFFSET;
 							tgt.right = tgt.left + 10;
 							tgt.bottom = tgt.top + 14;
-							skp->StretchRect( g_Param.deu_characters_overbrightSH, &src, &tgt );
+							if (STS()->pMission->HasMEDS()) skp->StretchRect( g_Param.deu_characters_overbrightSH, &src, &tgt );
+							else skp->StretchRect(g_Param.deu_characters_overbrightSH_MCD, &src, &tgt);
 						}
 						else
 						{
@@ -201,7 +207,8 @@ namespace vc
 							tgt.top = j * 14 + DPS_DISPLAY_VERTICAL_OFFSET;
 							tgt.right = tgt.left + 10;
 							tgt.bottom = tgt.top + 14;
-							skp->StretchRect( g_Param.deu_charactersSH, &src, &tgt );
+							if (STS()->pMission->HasMEDS()) skp->StretchRect( g_Param.deu_charactersSH, &src, &tgt );
+							else skp->StretchRect(g_Param.deu_charactersSH_MCD, &src, &tgt);
 						}
 					}
 				}
@@ -226,7 +233,8 @@ namespace vc
 					tgt.top = 24 * 14 + DPS_DISPLAY_VERTICAL_OFFSET;
 					tgt.right = tgt.left + 10;
 					tgt.bottom = tgt.top + 14;
-					skp->StretchRect( g_Param.deu_characters_faultSH, &src, &tgt );
+					if (STS()->pMission->HasMEDS()) skp->StretchRect( g_Param.deu_characters_faultSH, &src, &tgt );
+					else skp->StretchRect(g_Param.deu_characters_faultSH_MCD, &src, &tgt);
 				}
 			}
 		}
@@ -249,7 +257,8 @@ namespace vc
 					tgt.top = 25 * 14 + DPS_DISPLAY_VERTICAL_OFFSET;
 					tgt.right = tgt.left + 10;
 					tgt.bottom = tgt.top + 14;
-					skp->StretchRect( g_Param.deu_charactersSH, &src, &tgt );
+					if (STS()->pMission->HasMEDS()) skp->StretchRect( g_Param.deu_charactersSH, &src, &tgt );
+					else skp->StretchRect(g_Param.deu_charactersSH_MCD, &src, &tgt);
 				}
 			}
 		}

@@ -104,7 +104,7 @@ namespace vc
 		StdSwitch2* pRDRALTM;
 
 	public:
-		explicit PanelF8(Atlantis* _sts);
+		explicit PanelF8(Atlantis* _sts, bool hasMEDS);
 		virtual ~PanelF8();
 
 		void DefineVC() override;
@@ -147,6 +147,8 @@ namespace vc
 
 		UINT anim_needle_apu_egt = -1, anim_needle_apu_fuel_press = -1, anim_needle_apu_oil_temp = -1;
 		MGROUP_TRANSFORM* mgr_needle_apu_egt = nullptr, * mgr_needle_apu_fuel_press = nullptr, * mgr_needle_apu_oil_temp = nullptr;
+
+		bool bHasMEDS = false;
 
 	};
 }

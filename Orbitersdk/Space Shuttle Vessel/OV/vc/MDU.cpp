@@ -22,6 +22,7 @@ Date         Developer
 2022/08/05   GLS
 2022/08/27   GLS
 2022/09/29   GLS
+2026/10/30   Niker
 ********************************************/
 #include "MDU.h"
 #include "../Atlantis.h"
@@ -29,6 +30,7 @@ Date         Developer
 #include <MathSSV.h>
 #include "vc_defs.h"
 #include "../meshres_vc.h"
+#include "../mission/Mission.h"
 
 
 namespace vc
@@ -287,97 +289,138 @@ namespace vc
 	{
 		//sprintf_s(oapiDebugString(), 256, "MDU %s mouse event %d (%f, %f)", GetQualifiedIdentifier().c_str(), _event, x, y);
 		//ymax, ymin, xmin, xmax
-		if ((y >= 0.912661) && (y <= 0.967579) && (x >= 0.872059) && (x <= 0.911637))
+		if (STS()->pMission->HasMEDS())
 		{
-			if(_event & PANEL_MOUSE_LBDOWN)
+			//sprintf_s(oapiDebugString(), 256, "MDU %s mouse event %d (%f, %f)", GetQualifiedIdentifier().c_str(), _event, x, y);
+			if ((y >= 0.843f) && (y <= 0.917f) && (x >= 0.038f) && (x <= 0.1f))
 			{
-				sprintf_s(oapiDebugString(), 256, "MDU %s POWER ON/OFF", GetQualifiedIdentifier().c_str());
-				oapiSendMFDKey(usMDUID, OAPI_KEY_ESCAPE);
-				if (oapiGetMFDMode( usMDUID ) != 0) oapiOpenMFD( 1000, usMDUID );
+				if (_event & PANEL_MOUSE_LBDOWN)
+				{
+					//sprintf_s(oapiDebugString(), 256, "MDU %s POWER ON/OFF", GetQualifiedIdentifier().c_str());
+					oapiSendMFDKey(usMDUID, OAPI_KEY_ESCAPE);
+					if (oapiGetMFDMode(usMDUID) != 0) oapiOpenMFD(1000, usMDUID);
+				}
 			}
-		}
-		else if ((y >= 0.8379f) && (y <= 0.97f) && (x >= 0.0765f) && (x <= 0.1706f))
-		{
-			//sprintf_s(oapiDebugString(), 256, "MDU %s BRIGHTNESS", GetQualifiedIdentifier().c_str());
-			if (_event & PANEL_MOUSE_LBPRESSED)
+			else if ((y >= 0.843f) && (y <= 0.917f) && (x >= 0.907f) && (x <= 0.9385f))
 			{
-				fBrightness -= oapiGetSimStep() * 0.4;
-				if (fBrightness < 0.2) fBrightness = 0.2;
+				//sprintf_s(oapiDebugString(), 256, "MDU %s BRIGHTNESS", GetQualifiedIdentifier().c_str());
+				if (_event & PANEL_MOUSE_LBPRESSED)
+				{
+					fBrightness -= oapiGetSimStep() * 0.4;
+					if (fBrightness < 0.2) fBrightness = 0.2;
 
-				VisualCreated();
+					VisualCreated();
+				}
 			}
-		}
-		else if ((y >= 0.843f) && (y <= 0.917f) && (x >= 0.9385f) && (x <= 0.97f))
-		{
-			//sprintf_s(oapiDebugString(), 256, "MDU %s BRIGHTNESS", GetQualifiedIdentifier().c_str());
-			if (_event & PANEL_MOUSE_LBPRESSED)
+			else if ((y >= 0.843f) && (y <= 0.917f) && (x >= 0.9385f) && (x <= 0.97f))
 			{
-				fBrightness += oapiGetSimStep() * 0.4;
-				if (fBrightness > 1.0) fBrightness = 1.0;
+				//sprintf_s(oapiDebugString(), 256, "MDU %s BRIGHTNESS", GetQualifiedIdentifier().c_str());
+				if (_event & PANEL_MOUSE_LBPRESSED)
+				{
+					fBrightness += oapiGetSimStep() * 0.4;
+					if (fBrightness > 1.0) fBrightness = 1.0;
 
-				VisualCreated();
+					VisualCreated();
+				}
+			}
+			else if ((y >= 0.928f) && (y <= 0.976f))
+			{
+				float edgekeyClickPos = (x - 0.215f) / (0.802f - 0.215f); // calculate horizontal position of click relative to left edge of edgekey area (scaled between 0 and 1)
+				if ((edgekeyClickPos >= 0.0) && (edgekeyClickPos <= 0.08))
+				{
+					if (_event & PANEL_MOUSE_LBDOWN)
+					{
+						//sprintf_s(oapiDebugString(), 256, "MDU %s BUTTON 1", GetQualifiedIdentifier().c_str());
+						oapiProcessMFDButton(usMDUID, 0, _event);
+					}
+				}
+				else if ((edgekeyClickPos >= 0.18) && (edgekeyClickPos <= 0.26))
+				{
+					if (_event & PANEL_MOUSE_LBDOWN)
+					{
+						//sprintf_s(oapiDebugString(), 256, "MDU %s BUTTON 2", GetQualifiedIdentifier().c_str());
+						oapiProcessMFDButton(usMDUID, 1, _event);
+					}
+				}
+				else if ((edgekeyClickPos >= 0.365) && (edgekeyClickPos <= 0.445))
+				{
+					if (_event & PANEL_MOUSE_LBDOWN)
+					{
+						//sprintf_s(oapiDebugString(), 256, "MDU %s BUTTON 3", GetQualifiedIdentifier().c_str());
+						oapiProcessMFDButton(usMDUID, 2, _event);
+					}
+				}
+				else if (edgekeyClickPos >= 0.55 && edgekeyClickPos <= 0.63)
+				{
+					if (_event & PANEL_MOUSE_LBDOWN)
+					{
+						//sprintf_s(oapiDebugString(), 256, "MDU %s BUTTON 4", GetQualifiedIdentifier().c_str());
+						oapiProcessMFDButton(usMDUID, 3, _event);
+					}
+				}
+				else if ((edgekeyClickPos >= 0.74) && (edgekeyClickPos <= 0.82))
+				{
+					if (_event & PANEL_MOUSE_LBDOWN)
+					{
+						//sprintf_s(oapiDebugString(), 256, "MDU %s BUTTON 5", GetQualifiedIdentifier().c_str());
+						oapiProcessMFDButton(usMDUID, 4, _event);
+					}
+				}
+				else if ((edgekeyClickPos >= 0.92) && (edgekeyClickPos <= 1.0))
+				{
+					if (_event & PANEL_MOUSE_LBDOWN) {
+						t0 = oapiGetSysTime();
+						//sprintf_s(oapiDebugString(), 256, "MDU %s BUTTON 6 (%f)", GetQualifiedIdentifier().c_str(), t0);
+						counting = true;
+					}
+					else if ((_event & PANEL_MOUSE_LBUP) && counting) {
+						//sprintf_s(oapiDebugString(), 256, "MDU %s BUTTON 6: SWITCH PAGE", GetQualifiedIdentifier().c_str());
+						oapiSendMFDKey(usMDUID, OAPI_KEY_F2);
+						counting = false;
+					}
+					else if ((_event & PANEL_MOUSE_LBPRESSED) && counting && (oapiGetSysTime() - t0 >= 1.0)) {
+						//sprintf_s(oapiDebugString(), 256, "MDU %s BUTTON 6: SWITCH MODE", GetQualifiedIdentifier().c_str());
+						oapiSendMFDKey(usMDUID, OAPI_KEY_F1);
+						counting = false;
+					}
+				}
+				//else sprintf_s(oapiDebugString(), 256, "MDU %s EDGEKEYS: %f", GetQualifiedIdentifier().c_str(), edgekeyClickPos);
 			}
 		}
-		else if ((y >= 0.928f) && (y <= 0.976f))
+
+		else
 		{
-			float edgekeyClickPos = (x - 0.215f) / (0.802f - 0.215f); // calculate horizontal position of click relative to left edge of edgekey area (scaled between 0 and 1)
-			if ((edgekeyClickPos >= 0.0) && (edgekeyClickPos <= 0.08))
+			if ((y >= 0.912661) && (y <= 0.967579) && (x >= 0.872059) && (x <= 0.911637))
 			{
-				if(_event & PANEL_MOUSE_LBDOWN)
+				if (_event & PANEL_MOUSE_LBDOWN)
 				{
-					//sprintf_s(oapiDebugString(), 256, "MDU %s BUTTON 1", GetQualifiedIdentifier().c_str());
-					oapiProcessMFDButton (usMDUID, 0, _event);
+					//sprintf_s(oapiDebugString(), 256, "MDU %s POWER ON/OFF", GetQualifiedIdentifier().c_str());
+					oapiSendMFDKey(usMDUID, OAPI_KEY_ESCAPE);
+					if (oapiGetMFDMode(usMDUID) != 0) oapiOpenMFD(1000, usMDUID);
 				}
 			}
-			else if ((edgekeyClickPos >= 0.18) && (edgekeyClickPos <= 0.26))
+			else if ((y >= 0.84388f) && (y <= 0.94535f) && (x >= 0.084515f) && (x <= 0.124768))
 			{
-				if(_event & PANEL_MOUSE_LBDOWN)
+				//sprintf_s(oapiDebugString(), 256, "MDU %s BRIGHTNESS", GetQualifiedIdentifier().c_str());
+				if (_event & PANEL_MOUSE_LBPRESSED)
 				{
-					//sprintf_s(oapiDebugString(), 256, "MDU %s BUTTON 2", GetQualifiedIdentifier().c_str());
-					oapiProcessMFDButton (usMDUID, 1, _event);
+					fBrightness -= oapiGetSimStep() * 0.4;
+					if (fBrightness < 0.2) fBrightness = 0.2;
+
+					VisualCreated();
 				}
 			}
-			else if ((edgekeyClickPos >= 0.365) && (edgekeyClickPos <= 0.445))
+			else if ((y >= 0.84388f) && (y <= 0.94535f) && (x >= 0.124768f) && (x <= 0.169439))
 			{
-				if(_event & PANEL_MOUSE_LBDOWN)
+				//sprintf_s(oapiDebugString(), 256, "MDU %s BRIGHTNESS", GetQualifiedIdentifier().c_str());
+				if (_event & PANEL_MOUSE_LBPRESSED)
 				{
-					//sprintf_s(oapiDebugString(), 256, "MDU %s BUTTON 3", GetQualifiedIdentifier().c_str());
-					oapiProcessMFDButton (usMDUID, 2, _event);
+					fBrightness += oapiGetSimStep() * 0.4;
+					if (fBrightness > 1.0) fBrightness = 1.0;
+
+					VisualCreated();
 				}
 			}
-			else if(edgekeyClickPos >= 0.55 && edgekeyClickPos <= 0.63)
-			{
-				if(_event & PANEL_MOUSE_LBDOWN)
-				{
-					//sprintf_s(oapiDebugString(), 256, "MDU %s BUTTON 4", GetQualifiedIdentifier().c_str());
-					oapiProcessMFDButton (usMDUID, 3, _event);
-				}
-			}
-			else if ((edgekeyClickPos >= 0.74) && (edgekeyClickPos <= 0.82))
-			{
-				if(_event & PANEL_MOUSE_LBDOWN)
-				{
-					//sprintf_s(oapiDebugString(), 256, "MDU %s BUTTON 5", GetQualifiedIdentifier().c_str());
-					oapiProcessMFDButton (usMDUID, 4, _event);
-				}
-			}
-			else if ((edgekeyClickPos >= 0.92) && (edgekeyClickPos <= 1.0))
-			{
-				if (_event & PANEL_MOUSE_LBDOWN) {
-					t0 = oapiGetSysTime();
-					//sprintf_s(oapiDebugString(), 256, "MDU %s BUTTON 6 (%f)", GetQualifiedIdentifier().c_str(), t0);
-					counting = true;
-				} else if ((_event & PANEL_MOUSE_LBUP) && counting) {
-					//sprintf_s(oapiDebugString(), 256, "MDU %s BUTTON 6: SWITCH PAGE", GetQualifiedIdentifier().c_str());
-					oapiSendMFDKey (usMDUID, OAPI_KEY_F2);
-					counting = false;
-				} else if ((_event & PANEL_MOUSE_LBPRESSED) && counting && (oapiGetSysTime()-t0 >= 1.0)) {
-					//sprintf_s(oapiDebugString(), 256, "MDU %s BUTTON 6: SWITCH MODE", GetQualifiedIdentifier().c_str());
-					oapiSendMFDKey (usMDUID, OAPI_KEY_F1);
-					counting = false;
-				}
-			}
-			//else sprintf_s(oapiDebugString(), 256, "MDU %s EDGEKEYS: %f", GetQualifiedIdentifier().c_str(), edgekeyClickPos);
 		}
 		return true;
 	}
@@ -970,39 +1013,41 @@ namespace vc
 		DrawMenuButton( hDC, x );
 
 		// print title
-		switch (menu)
-		{
+		if (STS()->pMission->HasMEDS()) {
+			switch (menu)
+			{
 			case 0:
-				TextOut( hDC, 226, 471, "MAIN MENU", 9 );
+				TextOut(hDC, 226, 471, "MAIN MENU", 9);
 				break;
 			case 1:
-				TextOut( hDC, 226, 471, " FLIGHT INSTRUMENT MENU", 23 );
+				TextOut(hDC, 226, 471, " FLIGHT INSTRUMENT MENU", 23);
 				break;
 			case 2:
-				TextOut( hDC, 226, 471, "SUBSYSTEM MENU ", 15 );
+				TextOut(hDC, 226, 471, "SUBSYSTEM MENU ", 15);
 				break;
 			case 3:
-				TextOut( hDC, 226, 471, "DPS MENU ", 9 );
+				TextOut(hDC, 226, 471, "DPS MENU ", 9);
 				break;
 			case 4:
-				TextOut( hDC, 226, 471, " MAINTENANCE MENU", 17 );
+				TextOut(hDC, 226, 471, " MAINTENANCE MENU", 17);
 				break;
 			case 5:
-				TextOut( hDC, 226, 471, " CST MENU SELECTION", 19 );
+				TextOut(hDC, 226, 471, " CST MENU SELECTION", 19);
 				break;
 			case 6:
-				{
-					char buf[32];
-					sprintf_s( buf, 32, " IDP%d INTERACTIVE CST", GetIDP()->GetIDPID() );
-					TextOut( hDC, 226, 471, buf, strlen( buf ) );
-				}
-				break;
+			{
+				char buf[32];
+				sprintf_s(buf, 32, " IDP%d INTERACTIVE CST", GetIDP()->GetIDPID());
+				TextOut(hDC, 226, 471, buf, strlen(buf));
+			}
+			break;
 			case 7:
-				TextOut( hDC, 226, 471, " MDU CONFIGURATION MENU", 23 );
+				TextOut(hDC, 226, 471, " MDU CONFIGURATION MENU", 23);
 				break;
 			default:
 				// print nothing
 				break;
+			}
 		}
 
 		// print configuration info
@@ -1232,39 +1277,42 @@ namespace vc
 		DrawMenuButton( skp, x );
 
 		// print title
-		switch (menu)
+		if (STS()->pMission->HasMEDS())
 		{
+			switch (menu)
+			{
 			case 0:
-				skp->Text( 226, 471, "MAIN MENU", 9 );
+				skp->Text(226, 471, "MAIN MENU", 9);
 				break;
 			case 1:
-				skp->Text( 226, 471, " FLIGHT INSTRUMENT MENU", 23 );
+				skp->Text(226, 471, " FLIGHT INSTRUMENT MENU", 23);
 				break;
 			case 2:
-				skp->Text( 226, 471, "SUBSYSTEM MENU ", 15 );
+				skp->Text(226, 471, "SUBSYSTEM MENU ", 15);
 				break;
 			case 3:
-				skp->Text( 226, 471, "DPS MENU ", 9 );
+				skp->Text(226, 471, "DPS MENU ", 9);
 				break;
 			case 4:
-				skp->Text( 226, 471, " MAINTENANCE MENU", 17 );
+				skp->Text(226, 471, " MAINTENANCE MENU", 17);
 				break;
 			case 5:
-				skp->Text( 226, 471, " CST MENU SELECTION", 19 );
+				skp->Text(226, 471, " CST MENU SELECTION", 19);
 				break;
 			case 6:
-				{
-					char buf[32];
-					sprintf_s( buf, 32, " IDP%d INTERACTIVE CST", GetIDP()->GetIDPID() );
-					skp->Text( 226, 471, buf, strlen( buf ) );
-				}
-				break;
+			{
+				char buf[32];
+				sprintf_s(buf, 32, " IDP%d INTERACTIVE CST", GetIDP()->GetIDPID());
+				skp->Text(226, 471, buf, strlen(buf));
+			}
+			break;
 			case 7:
-				skp->Text( 226, 471, " MDU CONFIGURATION MENU", 23 );
+				skp->Text(226, 471, " MDU CONFIGURATION MENU", 23);
 				break;
 			default:
 				// print nothing
 				break;
+			}
 		}
 
 		// print configuration info
@@ -1417,42 +1465,84 @@ namespace vc
 	{
 		if (gdiBlackBrush) return;// already created
 
-		if (!(gdiBlackBrush = CreateSolidBrush( CR_BLACK ))) throw std::exception( "CreateSolidBrush() failed" );
-		if (!(gdiDarkGrayBrush = CreateSolidBrush( CR_DARK_GRAY ))) throw std::exception( "CreateSolidBrush() failed" );
-		if (!(gdiLightGrayBrush = CreateSolidBrush( CR_LIGHT_GRAY ))) throw std::exception( "CreateSolidBrush() failed" );
-		if (!(gdiWhiteBrush = CreateSolidBrush( CR_WHITE ))) throw std::exception( "CreateSolidBrush() failed" );
-		if (!(gdiRedBrush = CreateSolidBrush( CR_RED ))) throw std::exception( "CreateSolidBrush() failed" );
-		if (!(gdiYellowBrush = CreateSolidBrush( CR_YELLOW ))) throw std::exception( "CreateSolidBrush() failed" );
-		if (!(gdiCyanBrush = CreateSolidBrush( CR_CYAN ))) throw std::exception( "CreateSolidBrush() failed" );
-		if (!(gdiMagentaBrush = CreateSolidBrush( CR_MAGENTA ))) throw std::exception( "CreateSolidBrush() failed" );
-		if (!(gdiLightGreenBrush = CreateSolidBrush( CR_LIGHT_GREEN ))) throw std::exception( "CreateSolidBrush() failed" );
-		if (!(gdiBlueBrush = CreateSolidBrush( CR_BLUE ))) throw std::exception( "CreateSolidBrush() failed" );
+		if (STS()->pMission->HasMEDS())
+		{
+			if (!(gdiBlackBrush = CreateSolidBrush(CR_BLACK))) throw std::exception("CreateSolidBrush() failed");
+			if (!(gdiDarkGrayBrush = CreateSolidBrush(CR_DARK_GRAY))) throw std::exception("CreateSolidBrush() failed");
+			if (!(gdiLightGrayBrush = CreateSolidBrush(CR_LIGHT_GRAY))) throw std::exception("CreateSolidBrush() failed");
+			if (!(gdiWhiteBrush = CreateSolidBrush(CR_WHITE))) throw std::exception("CreateSolidBrush() failed");
+			if (!(gdiRedBrush = CreateSolidBrush(CR_RED))) throw std::exception("CreateSolidBrush() failed");
+			if (!(gdiYellowBrush = CreateSolidBrush(CR_YELLOW))) throw std::exception("CreateSolidBrush() failed");
+			if (!(gdiCyanBrush = CreateSolidBrush(CR_CYAN))) throw std::exception("CreateSolidBrush() failed");
+			if (!(gdiMagentaBrush = CreateSolidBrush(CR_MAGENTA))) throw std::exception("CreateSolidBrush() failed");
+			if (!(gdiLightGreenBrush = CreateSolidBrush(CR_LIGHT_GREEN))) throw std::exception("CreateSolidBrush() failed");
+			if (!(gdiBlueBrush = CreateSolidBrush(CR_BLUE))) throw std::exception("CreateSolidBrush() failed");
 
-		if (!(gdiBlackPen = CreatePen( PS_SOLID, 2, CR_BLACK ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiDarkGrayPen = CreatePen( PS_SOLID, 2, CR_DARK_GRAY ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiLightGrayPen = CreatePen( PS_SOLID, 2, CR_LIGHT_GRAY ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiLightGrayThickPen = CreatePen( PS_SOLID, 3, CR_LIGHT_GRAY ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiWhitePen = CreatePen( PS_SOLID, 2, CR_WHITE ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiRedPen = CreatePen( PS_SOLID, 2, CR_RED ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiYellowPen = CreatePen( PS_SOLID, 2, CR_YELLOW ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiCyanPen = CreatePen( PS_SOLID, 2, CR_CYAN ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiMagentaPen = CreatePen( PS_SOLID, 2, CR_MAGENTA ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiLightGreenPen = CreatePen( PS_SOLID, 2, CR_LIGHT_GREEN ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiDarkGreenPen = CreatePen( PS_SOLID, 2, CR_DARK_GREEN ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiLightGreenThickPen = CreatePen( PS_SOLID, 4, CR_LIGHT_GREEN ))) throw std::exception( "CreatePen() failed" );
+			if (!(gdiBlackPen = CreatePen(PS_SOLID, 2, CR_BLACK))) throw std::exception("CreatePen() failed");
+			if (!(gdiDarkGrayPen = CreatePen(PS_SOLID, 2, CR_DARK_GRAY))) throw std::exception("CreatePen() failed");
+			if (!(gdiLightGrayPen = CreatePen(PS_SOLID, 2, CR_LIGHT_GRAY))) throw std::exception("CreatePen() failed");
+			if (!(gdiLightGrayThickPen = CreatePen(PS_SOLID, 3, CR_LIGHT_GRAY))) throw std::exception("CreatePen() failed");
+			if (!(gdiWhitePen = CreatePen(PS_SOLID, 2, CR_WHITE))) throw std::exception("CreatePen() failed");
+			if (!(gdiRedPen = CreatePen(PS_SOLID, 2, CR_RED))) throw std::exception("CreatePen() failed");
+			if (!(gdiYellowPen = CreatePen(PS_SOLID, 2, CR_YELLOW))) throw std::exception("CreatePen() failed");
+			if (!(gdiCyanPen = CreatePen(PS_SOLID, 2, CR_CYAN))) throw std::exception("CreatePen() failed");
+			if (!(gdiMagentaPen = CreatePen(PS_SOLID, 2, CR_MAGENTA))) throw std::exception("CreatePen() failed");
+			if (!(gdiLightGreenPen = CreatePen(PS_SOLID, 2, CR_LIGHT_GREEN))) throw std::exception("CreatePen() failed");
+			if (!(gdiDarkGreenPen = CreatePen(PS_SOLID, 2, CR_DARK_GREEN))) throw std::exception("CreatePen() failed");
+			if (!(gdiLightGreenThickPen = CreatePen(PS_SOLID, 4, CR_LIGHT_GREEN))) throw std::exception("CreatePen() failed");
 
-		if (!(gdiOverbrightPen = CreatePen( PS_SOLID, 2, CR_DPS_OVERBRIGHT ))) throw std::exception( "CreatePen() failed" );
-		if (!(gdiNormalPen = CreatePen( PS_SOLID, 2, CR_DPS_NORMAL ))) throw std::exception( "CreatePen() failed" );
-		LOGBRUSH lb = {BS_SOLID, CR_DPS_NORMAL, 0};
-		DWORD pstyle[2] = {16, 8};
-		if (!(gdiDashedNormalPen = ExtCreatePen( PS_GEOMETRIC | PS_USERSTYLE, 2, &lb, 2, pstyle ))) throw std::exception( "ExtCreatePen() failed" );
+			if (!(gdiOverbrightPen = CreatePen(PS_SOLID, 2, CR_DPS_OVERBRIGHT))) throw std::exception("CreatePen() failed");
+			if (!(gdiNormalPen = CreatePen(PS_SOLID, 2, CR_DPS_NORMAL))) throw std::exception("CreatePen() failed");
+			LOGBRUSH lb = { BS_SOLID, CR_DPS_NORMAL, 0 };
+			DWORD pstyle[2] = { 16, 8 };
+			if (!(gdiDashedNormalPen = ExtCreatePen(PS_GEOMETRIC | PS_USERSTYLE, 2, &lb, 2, pstyle))) throw std::exception("ExtCreatePen() failed");
 
-		if (!(gdiSSVAFont_h20w17 = CreateFont( 20, 17, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_A" ))) throw std::exception( "CreateFont() failed" );
-		if (!(gdiSSVAFont_h10w10bold = CreateFont( 10, 10, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_A" ))) throw std::exception( "CreateFont() failed" );
-		if (!(gdiSSVAFont_h11w9 = CreateFont( 11, 9, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_A" ))) throw std::exception( "CreateFont() failed" );
-		if (!(gdiSSVBFont_h18w9 = CreateFont( 18, 9, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_B" ))) throw std::exception( "CreateFont() failed" );
-		if (!(gdiSSVBFont_h12w7 = CreateFont( 12, 7, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_B" ))) throw std::exception( "CreateFont() failed" );
-		if (!(gdiSSVBFont_h16w9 = CreateFont( 16, 9, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_B" ))) throw std::exception( "CreateFont() failed" );
+			if (!(gdiSSVAFont_h20w17 = CreateFont(20, 17, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_A"))) throw std::exception("CreateFont() failed");
+			if (!(gdiSSVAFont_h10w10bold = CreateFont(10, 10, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_A"))) throw std::exception("CreateFont() failed");
+			if (!(gdiSSVAFont_h11w9 = CreateFont(11, 9, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_A"))) throw std::exception("CreateFont() failed");
+			if (!(gdiSSVBFont_h18w9 = CreateFont(18, 9, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_B"))) throw std::exception("CreateFont() failed");
+			if (!(gdiSSVBFont_h12w7 = CreateFont(12, 7, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_B"))) throw std::exception("CreateFont() failed");
+			if (!(gdiSSVBFont_h16w9 = CreateFont(16, 9, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_B"))) throw std::exception("CreateFont() failed");
+		}
+		else
+		{
+			if (!(gdiBlackBrush = CreateSolidBrush(CR_BLACK_MCD))) throw std::exception("CreateSolidBrush() failed");
+			if (!(gdiDarkGrayBrush = CreateSolidBrush(CR_DARK_GRAY_MCD))) throw std::exception("CreateSolidBrush() failed");
+			if (!(gdiLightGrayBrush = CreateSolidBrush(CR_LIGHT_GRAY_MCD))) throw std::exception("CreateSolidBrush() failed");
+			if (!(gdiWhiteBrush = CreateSolidBrush(CR_WHITE_MCD))) throw std::exception("CreateSolidBrush() failed");
+			if (!(gdiRedBrush = CreateSolidBrush(CR_RED_MCD))) throw std::exception("CreateSolidBrush() failed");
+			if (!(gdiYellowBrush = CreateSolidBrush(CR_YELLOW_MCD))) throw std::exception("CreateSolidBrush() failed");
+			if (!(gdiCyanBrush = CreateSolidBrush(CR_CYAN_MCD))) throw std::exception("CreateSolidBrush() failed");
+			if (!(gdiMagentaBrush = CreateSolidBrush(CR_MAGENTA_MCD))) throw std::exception("CreateSolidBrush() failed");
+			if (!(gdiLightGreenBrush = CreateSolidBrush(CR_LIGHT_GREEN_MCD))) throw std::exception("CreateSolidBrush() failed");
+			if (!(gdiBlueBrush = CreateSolidBrush(CR_BLUE_MCD))) throw std::exception("CreateSolidBrush() failed");
+
+			if (!(gdiBlackPen = CreatePen(PS_SOLID, 2, CR_BLACK_MCD))) throw std::exception("CreatePen() failed");
+			if (!(gdiDarkGrayPen = CreatePen(PS_SOLID, 2, CR_DARK_GRAY_MCD))) throw std::exception("CreatePen() failed");
+			if (!(gdiLightGrayPen = CreatePen(PS_SOLID, 2, CR_LIGHT_GRAY_MCD))) throw std::exception("CreatePen() failed");
+			if (!(gdiLightGrayThickPen = CreatePen(PS_SOLID, 3, CR_LIGHT_GRAY_MCD))) throw std::exception("CreatePen() failed");
+			if (!(gdiWhitePen = CreatePen(PS_SOLID, 2, CR_WHITE_MCD))) throw std::exception("CreatePen() failed");
+			if (!(gdiRedPen = CreatePen(PS_SOLID, 2, CR_RED_MCD))) throw std::exception("CreatePen() failed");
+			if (!(gdiYellowPen = CreatePen(PS_SOLID, 2, CR_YELLOW_MCD))) throw std::exception("CreatePen() failed");
+			if (!(gdiCyanPen = CreatePen(PS_SOLID, 2, CR_CYAN_MCD))) throw std::exception("CreatePen() failed");
+			if (!(gdiMagentaPen = CreatePen(PS_SOLID, 2, CR_MAGENTA_MCD))) throw std::exception("CreatePen() failed");
+			if (!(gdiLightGreenPen = CreatePen(PS_SOLID, 2, CR_LIGHT_GREEN_MCD))) throw std::exception("CreatePen() failed");
+			if (!(gdiDarkGreenPen = CreatePen(PS_SOLID, 2, CR_DARK_GREEN_MCD))) throw std::exception("CreatePen() failed");
+			if (!(gdiLightGreenThickPen = CreatePen(PS_SOLID, 4, CR_LIGHT_GREEN_MCD))) throw std::exception("CreatePen() failed");
+
+			if (!(gdiOverbrightPen = CreatePen(PS_SOLID, 2, CR_DPS_OVERBRIGHT_MCD))) throw std::exception("CreatePen() failed");
+			if (!(gdiNormalPen = CreatePen(PS_SOLID, 2, CR_DPS_NORMAL_MCD))) throw std::exception("CreatePen() failed");
+			LOGBRUSH lb = { BS_SOLID, CR_DPS_NORMAL_MCD, 0 };
+			DWORD pstyle[2] = { 16, 8 };
+			if (!(gdiDashedNormalPen = ExtCreatePen(PS_GEOMETRIC | PS_USERSTYLE, 2, &lb, 2, pstyle))) throw std::exception("ExtCreatePen() failed");
+
+			if (!(gdiSSVAFont_h20w17 = CreateFont(20, 17, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_A"))) throw std::exception("CreateFont() failed");
+			if (!(gdiSSVAFont_h10w10bold = CreateFont(10, 10, 0, 0, FW_BOLD, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_A"))) throw std::exception("CreateFont() failed");
+			if (!(gdiSSVAFont_h11w9 = CreateFont(11, 9, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_A"))) throw std::exception("CreateFont() failed");
+			if (!(gdiSSVBFont_h18w9 = CreateFont(18, 9, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_B"))) throw std::exception("CreateFont() failed");
+			if (!(gdiSSVBFont_h12w7 = CreateFont(12, 7, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_B"))) throw std::exception("CreateFont() failed");
+			if (!(gdiSSVBFont_h16w9 = CreateFont(16, 9, 0, 0, FW_MEDIUM, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, FIXED_PITCH, "SSV_Font_B"))) throw std::exception("CreateFont() failed");
+		}
 		return;
 	}
 
@@ -1503,42 +1593,84 @@ namespace vc
 	{
 		if (skpBlackBrush) return;// already created
 
-		if (!(skpBlackBrush = oapiCreateBrush( CR_BLACK ))) throw std::exception( "oapiCreateBrush() failed" );
-		if (!(skpDarkGrayBrush = oapiCreateBrush( CR_DARK_GRAY ))) throw std::exception( "oapiCreateBrush() failed" );
-		if (!(skpLightGrayBrush = oapiCreateBrush( CR_LIGHT_GRAY ))) throw std::exception( "oapiCreateBrush() failed" );
-		if (!(skpWhiteBrush = oapiCreateBrush( CR_WHITE ))) throw std::exception( "oapiCreateBrush() failed" );
-		if (!(skpRedBrush = oapiCreateBrush( CR_RED ))) throw std::exception( "oapiCreateBrush() failed" );
-		if (!(skpYellowBrush = oapiCreateBrush( CR_YELLOW ))) throw std::exception( "oapiCreateBrush() failed" );
-		if (!(skpCyanBrush = oapiCreateBrush( CR_CYAN ))) throw std::exception( "oapiCreateBrush() failed" );
-		if (!(skpMagentaBrush = oapiCreateBrush( CR_MAGENTA ))) throw std::exception( "oapiCreateBrush() failed" );
-		if (!(skpLightGreenBrush = oapiCreateBrush( CR_LIGHT_GREEN ))) throw std::exception( "oapiCreateBrush() failed" );
-		if (!(skpBlueBrush = oapiCreateBrush( CR_BLUE ))) throw std::exception( "oapiCreateBrush() failed" );
-		if (!(_skpBlackBrush = oapiCreateBrush( RGB( 0, 0, 0 ) ))) throw std::exception( "oapiCreateBrush() failed" );
+		if (STS()->pMission->HasMEDS())
+		{
+			if (!(skpBlackBrush = oapiCreateBrush(CR_BLACK))) throw std::exception("oapiCreateBrush() failed");
+			if (!(skpDarkGrayBrush = oapiCreateBrush(CR_DARK_GRAY))) throw std::exception("oapiCreateBrush() failed");
+			if (!(skpLightGrayBrush = oapiCreateBrush(CR_LIGHT_GRAY))) throw std::exception("oapiCreateBrush() failed");
+			if (!(skpWhiteBrush = oapiCreateBrush(CR_WHITE))) throw std::exception("oapiCreateBrush() failed");
+			if (!(skpRedBrush = oapiCreateBrush(CR_RED))) throw std::exception("oapiCreateBrush() failed");
+			if (!(skpYellowBrush = oapiCreateBrush(CR_YELLOW))) throw std::exception("oapiCreateBrush() failed");
+			if (!(skpCyanBrush = oapiCreateBrush(CR_CYAN))) throw std::exception("oapiCreateBrush() failed");
+			if (!(skpMagentaBrush = oapiCreateBrush(CR_MAGENTA))) throw std::exception("oapiCreateBrush() failed");
+			if (!(skpLightGreenBrush = oapiCreateBrush(CR_LIGHT_GREEN))) throw std::exception("oapiCreateBrush() failed");
+			if (!(skpBlueBrush = oapiCreateBrush(CR_BLUE))) throw std::exception("oapiCreateBrush() failed");
+			if (!(_skpBlackBrush = oapiCreateBrush(RGB(0, 0, 0)))) throw std::exception("oapiCreateBrush() failed");
 
-		if (!(skpBlackPen = oapiCreatePen( 1, 2, CR_BLACK ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpDarkGrayPen = oapiCreatePen( 1, 2, CR_DARK_GRAY ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpLightGrayPen = oapiCreatePen( 1, 2, CR_LIGHT_GRAY ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpLightGrayThickPen = oapiCreatePen( 1, 3, CR_LIGHT_GRAY ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpWhitePen = oapiCreatePen( 1, 2, CR_WHITE ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpRedPen = oapiCreatePen( 1, 2, CR_RED ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpYellowPen = oapiCreatePen( 1, 2, CR_YELLOW ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpCyanPen = oapiCreatePen( 1, 2, CR_CYAN ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpMagentaPen = oapiCreatePen( 1, 2, CR_MAGENTA ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpLightGreenPen = oapiCreatePen( 1, 2, CR_LIGHT_GREEN ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpDarkGreenPen = oapiCreatePen( 1, 2, CR_DARK_GREEN ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpLightGreenThickPen = oapiCreatePen( 1, 4, CR_LIGHT_GREEN ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(_skpBlackPen = oapiCreatePen( 1, 2, RGB( 0, 0, 0 ) ))) throw std::exception( "oapiCreatePen() failed" );
+			if (!(skpBlackPen = oapiCreatePen(1, 2, CR_BLACK))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpDarkGrayPen = oapiCreatePen(1, 2, CR_DARK_GRAY))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpLightGrayPen = oapiCreatePen(1, 2, CR_LIGHT_GRAY))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpLightGrayThickPen = oapiCreatePen(1, 3, CR_LIGHT_GRAY))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpWhitePen = oapiCreatePen(1, 2, CR_WHITE))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpRedPen = oapiCreatePen(1, 2, CR_RED))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpYellowPen = oapiCreatePen(1, 2, CR_YELLOW))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpCyanPen = oapiCreatePen(1, 2, CR_CYAN))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpMagentaPen = oapiCreatePen(1, 2, CR_MAGENTA))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpLightGreenPen = oapiCreatePen(1, 2, CR_LIGHT_GREEN))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpDarkGreenPen = oapiCreatePen(1, 2, CR_DARK_GREEN))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpLightGreenThickPen = oapiCreatePen(1, 4, CR_LIGHT_GREEN))) throw std::exception("oapiCreatePen() failed");
+			if (!(_skpBlackPen = oapiCreatePen(1, 2, RGB(0, 0, 0)))) throw std::exception("oapiCreatePen() failed");
 
-		if (!(skpOverbrightPen = oapiCreatePen( 1, 2, CR_DPS_OVERBRIGHT ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpNormalPen = oapiCreatePen( 1, 2, CR_DPS_NORMAL ))) throw std::exception( "oapiCreatePen() failed" );
-		if (!(skpDashedNormalPen = oapiCreatePen( 2, 2, CR_DPS_NORMAL ))) throw std::exception( "oapiCreatePen() failed" );
+			if (!(skpOverbrightPen = oapiCreatePen(1, 2, CR_DPS_OVERBRIGHT))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpNormalPen = oapiCreatePen(1, 2, CR_DPS_NORMAL))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpDashedNormalPen = oapiCreatePen(2, 2, CR_DPS_NORMAL))) throw std::exception("oapiCreatePen() failed");
 
-		if (!(skpSSVAFont_h20w17 = oapiCreateFontEx( 20, "SSV_Font_A", 17, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
-		if (!(skpSSVAFont_h10w10bold = oapiCreateFontEx( 10, "SSV_Font_A", 10, FW_BOLD, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
-		if (!(skpSSVAFont_h11w9 = oapiCreateFontEx( 11, "SSV_Font_A", 9, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
-		if (!(skpSSVBFont_h18w9 = oapiCreateFontEx( 18, "SSV_Font_B", 9, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
-		if (!(skpSSVBFont_h12w7 = oapiCreateFontEx( 12, "SSV_Font_B", 7, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
-		if (!(skpSSVBFont_h16w9 = oapiCreateFontEx( 16, "SSV_Font_B", 6, FW_MEDIUM, FontStyle::FONT_NORMAL, 0 ))) throw std::exception( "oapiCreateFontEx() failed" );
+			if (!(skpSSVAFont_h20w17 = oapiCreateFontEx(20, "SSV_Font_A", 17, FW_MEDIUM, FontStyle::FONT_NORMAL, 0))) throw std::exception("oapiCreateFontEx() failed");
+			if (!(skpSSVAFont_h10w10bold = oapiCreateFontEx(10, "SSV_Font_A", 10, FW_BOLD, FontStyle::FONT_NORMAL, 0))) throw std::exception("oapiCreateFontEx() failed");
+			if (!(skpSSVAFont_h11w9 = oapiCreateFontEx(11, "SSV_Font_A", 9, FW_MEDIUM, FontStyle::FONT_NORMAL, 0))) throw std::exception("oapiCreateFontEx() failed");
+			if (!(skpSSVBFont_h18w9 = oapiCreateFontEx(18, "SSV_Font_B", 9, FW_MEDIUM, FontStyle::FONT_NORMAL, 0))) throw std::exception("oapiCreateFontEx() failed");
+			if (!(skpSSVBFont_h12w7 = oapiCreateFontEx(12, "SSV_Font_B", 7, FW_MEDIUM, FontStyle::FONT_NORMAL, 0))) throw std::exception("oapiCreateFontEx() failed");
+			if (!(skpSSVBFont_h16w9 = oapiCreateFontEx(16, "SSV_Font_B", 6, FW_MEDIUM, FontStyle::FONT_NORMAL, 0))) throw std::exception("oapiCreateFontEx() failed");
+		}
+		else
+		{
+			if (!(skpBlackBrush = oapiCreateBrush(CR_BLACK_MCD))) throw std::exception("oapiCreateBrush() failed");
+			if (!(skpDarkGrayBrush = oapiCreateBrush(CR_DARK_GRAY_MCD))) throw std::exception("oapiCreateBrush() failed");
+			if (!(skpLightGrayBrush = oapiCreateBrush(CR_LIGHT_GRAY_MCD))) throw std::exception("oapiCreateBrush() failed");
+			if (!(skpWhiteBrush = oapiCreateBrush(CR_WHITE_MCD))) throw std::exception("oapiCreateBrush() failed");
+			if (!(skpRedBrush = oapiCreateBrush(CR_RED_MCD))) throw std::exception("oapiCreateBrush() failed");
+			if (!(skpYellowBrush = oapiCreateBrush(CR_YELLOW_MCD))) throw std::exception("oapiCreateBrush() failed");
+			if (!(skpCyanBrush = oapiCreateBrush(CR_CYAN_MCD))) throw std::exception("oapiCreateBrush() failed");
+			if (!(skpMagentaBrush = oapiCreateBrush(CR_MAGENTA_MCD))) throw std::exception("oapiCreateBrush() failed");
+			if (!(skpLightGreenBrush = oapiCreateBrush(CR_LIGHT_GREEN_MCD))) throw std::exception("oapiCreateBrush() failed");
+			if (!(skpBlueBrush = oapiCreateBrush(CR_BLUE_MCD))) throw std::exception("oapiCreateBrush() failed");
+			if (!(_skpBlackBrush = oapiCreateBrush(RGB(0, 0, 0)))) throw std::exception("oapiCreateBrush() failed");
+
+			if (!(skpBlackPen = oapiCreatePen(1, 2, CR_BLACK_MCD))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpDarkGrayPen = oapiCreatePen(1, 2, CR_DARK_GRAY_MCD))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpLightGrayPen = oapiCreatePen(1, 2, CR_LIGHT_GRAY_MCD))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpLightGrayThickPen = oapiCreatePen(1, 3, CR_LIGHT_GRAY_MCD))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpWhitePen = oapiCreatePen(1, 2, CR_WHITE_MCD))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpRedPen = oapiCreatePen(1, 2, CR_RED_MCD))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpYellowPen = oapiCreatePen(1, 2, CR_YELLOW_MCD))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpCyanPen = oapiCreatePen(1, 2, CR_CYAN_MCD))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpMagentaPen = oapiCreatePen(1, 2, CR_MAGENTA_MCD))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpLightGreenPen = oapiCreatePen(1, 2, CR_LIGHT_GREEN_MCD))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpDarkGreenPen = oapiCreatePen(1, 2, CR_DARK_GREEN_MCD))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpLightGreenThickPen = oapiCreatePen(1, 4, CR_LIGHT_GREEN_MCD))) throw std::exception("oapiCreatePen() failed");
+			if (!(_skpBlackPen = oapiCreatePen(1, 2, RGB(0, 0, 0)))) throw std::exception("oapiCreatePen() failed");
+
+			if (!(skpOverbrightPen = oapiCreatePen(1, 2, CR_DPS_OVERBRIGHT_MCD))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpNormalPen = oapiCreatePen(1, 2, CR_DPS_NORMAL_MCD))) throw std::exception("oapiCreatePen() failed");
+			if (!(skpDashedNormalPen = oapiCreatePen(2, 2, CR_DPS_NORMAL_MCD))) throw std::exception("oapiCreatePen() failed");
+
+			if (!(skpSSVAFont_h20w17 = oapiCreateFontEx(20, "SSV_Font_A", 17, FW_MEDIUM, FontStyle::FONT_NORMAL, 0))) throw std::exception("oapiCreateFontEx() failed");
+			if (!(skpSSVAFont_h10w10bold = oapiCreateFontEx(10, "SSV_Font_A", 10, FW_BOLD, FontStyle::FONT_NORMAL, 0))) throw std::exception("oapiCreateFontEx() failed");
+			if (!(skpSSVAFont_h11w9 = oapiCreateFontEx(11, "SSV_Font_A", 9, FW_MEDIUM, FontStyle::FONT_NORMAL, 0))) throw std::exception("oapiCreateFontEx() failed");
+			if (!(skpSSVBFont_h18w9 = oapiCreateFontEx(18, "SSV_Font_B", 9, FW_MEDIUM, FontStyle::FONT_NORMAL, 0))) throw std::exception("oapiCreateFontEx() failed");
+			if (!(skpSSVBFont_h12w7 = oapiCreateFontEx(12, "SSV_Font_B", 7, FW_MEDIUM, FontStyle::FONT_NORMAL, 0))) throw std::exception("oapiCreateFontEx() failed");
+			if (!(skpSSVBFont_h16w9 = oapiCreateFontEx(16, "SSV_Font_B", 6, FW_MEDIUM, FontStyle::FONT_NORMAL, 0))) throw std::exception("oapiCreateFontEx() failed");
+		}
 		return;
 	}
 

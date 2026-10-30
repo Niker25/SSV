@@ -111,7 +111,7 @@ namespace vc
 		StdSwitch2* pRDRALTM;
 
 	public:
-		explicit PanelF7(Atlantis* _sts);
+		explicit PanelF7(Atlantis* _sts, bool hasMEDS);
 		virtual ~PanelF7();
 
 		void DefineVC() override;
@@ -125,7 +125,7 @@ namespace vc
 		MGROUP_TRANSFORM* mgr_needle_oms_pc_left = nullptr, *mgr_needle_oms_pc_right = nullptr, *mgr_needle_oms_he_left = nullptr, *mgr_needle_oms_he_right = nullptr;
 
 		//MPS Press
-		UINT anim_needle_mps_pc_L,
+		UINT anim_needle_mps_pc_L = -1,
 			anim_needle_mps_pc_C = -1,
 			anim_needle_mps_pc_R = -1,
 			anim_needle_mps_LO2 = -1,
@@ -152,6 +152,7 @@ namespace vc
 		UINT anim_needle_LOB = -1, anim_needle_LIB = -1, anim_needle_RIB = -1, anim_needle_ROB = -1, anim_needle_DAFB = -1, anim_needle_DRFB = -1, anim_needle_DBFOFB = -1, anim_needle_Speedbrake_Pos = -1, anim_needle_Speedbrake_Cmd = -1;
 		MGROUP_TRANSFORM *mgr_needle_LOB = nullptr, * mgr_needle_LIB = nullptr, * mgr_needle_RIB = nullptr, * mgr_needle_ROB = nullptr, * mgr_needle_DAFB = nullptr, * mgr_needle_DRFB = nullptr, * mgr_needle_DBFOFB = nullptr, * mgr_needle_Speedbrake_Pos = nullptr, * mgr_needle_Speedbrake_Cmd = nullptr;
 
+		bool bHasMEDS = false;
 	};
 }
 

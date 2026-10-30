@@ -79,24 +79,42 @@ Date         Developer
 #include <MathSSV.h>
 #include <DrawAPI.h>
 
-
-#define CR_BLACK RGB( 0, 0, 0 )
-#define CR_DARK_GRAY RGB( 128, 255, 0 )
-#define CR_LIGHT_GRAY RGB( 128, 255, 0 )
-#define CR_WHITE RGB( 128, 255, 0 )
+#define CR_BLACK RGB( 10, 18, 61 )
+#define CR_DARK_GRAY RGB( 60, 60, 80 )
+#define CR_LIGHT_GRAY RGB( 180, 180, 200 )
+#define CR_WHITE RGB( 255, 255, 255 )
 //#define CR_ORANGE RGB( 255, 128, 0 )
-#define CR_RED RGB( 128, 255, 0 )
-#define CR_YELLOW RGB( 128, 255, 0 )
-#define CR_CYAN RGB( 0, 0, 0 )
+#define CR_RED RGB( 255, 0, 0 )
+#define CR_YELLOW RGB( 255, 255, 0 )
+#define CR_CYAN RGB( 0, 255, 255 )
 #define CR_MAGENTA RGB( 255, 0, 255 )
-#define CR_LIGHT_GREEN RGB( 128, 255, 0 )
-#define CR_DARK_GREEN RGB( 128, 255, 0 )
-#define CR_BLUE RGB( 128, 255, 0 )
+#define CR_LIGHT_GREEN RGB( 0, 255, 0 )
+#define CR_DARK_GREEN RGB( 0, 160, 0 )
+#define CR_BLUE RGB( 0, 0, 255 )
 //#define CR_PINK RGB( 220, 150, 220 )
 //#define CR_BROWN RGB( 190, 50, 30 )
 
 #define CR_DPS_NORMAL RGB( 128, 255, 0 )
-#define CR_DPS_OVERBRIGHT RGB( 128, 255, 0 )
+#define CR_DPS_OVERBRIGHT RGB( 255, 255, 0 )
+
+//MCD Color
+#define CR_BLACK_MCD RGB( 0, 0, 0 )
+#define CR_DARK_GRAY_MCD RGB( 128, 255, 0 )
+#define CR_LIGHT_GRAY_MCD RGB( 128, 255, 0 )
+#define CR_WHITE_MCD RGB( 128, 255, 0 )
+//#define CR_ORANGE RGB( 255, 128, 0 )
+#define CR_RED_MCD RGB( 128, 255, 0 )
+#define CR_YELLOW_MCD RGB( 128, 255, 0 )
+#define CR_CYAN_MCD RGB( 0, 0, 0 )
+#define CR_MAGENTA_MCD RGB( 255, 0, 255 )
+#define CR_LIGHT_GREEN_MCD RGB( 128, 255, 0 )
+#define CR_DARK_GREEN_MCD RGB( 128, 255, 0 )
+#define CR_BLUE_MCD RGB( 128, 255, 0 )
+//#define CR_PINK RGB( 220, 150, 220 )
+//#define CR_BROWN RGB( 190, 50, 30 )
+
+#define CR_DPS_NORMAL_MCD RGB( 128, 255, 0 )
+#define CR_DPS_OVERBRIGHT_MCD RGB( 128, 255, 0 )
 
 inline constexpr int DPS_DISPLAY_VERTICAL_OFFSET = 32;
 

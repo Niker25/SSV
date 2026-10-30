@@ -168,17 +168,28 @@ typedef struct {
 	SURFHANDLE deu_charactersSH;
 	SURFHANDLE deu_characters_overbrightSH;
 	SURFHANDLE deu_characters_faultSH;
+
+	HBITMAP deu_characters_mcd;
+	HBITMAP deu_characters_overbright_mcd;
+	HBITMAP deu_characters_fault_mcd;
+	HDC DeuCharBitmapDC_MCD;
+	HDC DeuCharOvrBrgtBitmapDC_MCD;
+	HDC DeuCharFaultBitmapDC_MCD;
+
+	SURFHANDLE deu_charactersSH_MCD;
+	SURFHANDLE deu_characters_overbrightSH_MCD;
+	SURFHANDLE deu_characters_faultSH_MCD;
 } GDIParams;
 
 
 typedef struct
 {
-	double Elevator;// [-33.0บ, +18.0บ]
-	double Aileron;// [-33.0บ, +18.0บ]
-	double BodyFlap;// [-11.7บ, +22.55บ]
-	double Speedbrake;// [0บ, 87.2บ]
-	double Rudder;// [-27.1บ, +27.1บ]
-	double LandingGear;// [0บ, 98.0บ]
+	double Elevator;// [-33.0ยบ, +18.0ยบ]
+	double Aileron;// [-33.0ยบ, +18.0ยบ]
+	double BodyFlap;// [-11.7ยบ, +22.55ยบ]
+	double Speedbrake;// [0ยบ, 87.2ยบ]
+	double Rudder;// [-27.1ยบ, +27.1ยบ]
+	double LandingGear;// [0ยบ, 98.0ยบ]
 	bool SILTSPOD;
 } AerosurfacePositions;
 

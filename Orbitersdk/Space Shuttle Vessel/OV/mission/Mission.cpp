@@ -1402,4 +1402,9 @@ namespace mission
 	{
 		return plbcameras;
 	}
+
+	bool Mission::HasMEDS(void) const
+	{
+		return MEDSFlightDeck;
+	}
 }

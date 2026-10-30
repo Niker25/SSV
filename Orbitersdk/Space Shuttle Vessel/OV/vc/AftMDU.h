@@ -72,7 +72,7 @@ namespace vc
 	private:
 		MDU* pAFD;
 	public:
-		explicit AftMDU(Atlantis* _sts);
+		explicit AftMDU(Atlantis* _sts, bool hasMEDS);
 		virtual ~AftMDU();
 
 		void DefineVC() override;
@@ -92,6 +92,8 @@ namespace vc
 
 		UINT anim_needle_RollErrorCDR = -1, anim_needle_PitchErrorCDR = -1, anim_needle_YawErrorCDR = -1;
 		MGROUP_TRANSFORM* mgr_needle_RollErrorCDR = nullptr, * mgr_needle_PitchErrorCDR = nullptr, * mgr_needle_YawErrorCDR = nullptr;
+
+		bool bHasMEDS = false;
 	};
 }
 

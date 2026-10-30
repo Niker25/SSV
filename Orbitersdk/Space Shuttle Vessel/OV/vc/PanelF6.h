@@ -80,7 +80,7 @@ namespace vc
 	class RotarySwitchPotentiometer;
 
 
-	class PanelF6 : public AtlantisPanel
+	class PanelF6: public AtlantisPanel
 	{
 		MDU* pCDR1;
 		MDU* pCDR2;
@@ -96,7 +96,7 @@ namespace vc
 		StandardTalkback3* pLandingGearTB[3];
 
 		StandardSwitchCover* pLandingGearArmDeployCover[2];
-		PushButtonIndicatorSingleLight* pLandingGearArmDeploy[2];
+		PushButtonIndicatorSingleLight *pLandingGearArmDeploy[2];
 
 		StandardDoubleLight* pRCSCommand[3];
 		StandardDoubleLight* pRangeSafeArm;
@@ -110,7 +110,7 @@ namespace vc
 		StdSwitch2* pRDRALTM;
 
 	public:
-		explicit PanelF6(Atlantis* _sts);
+		explicit PanelF6(Atlantis* _sts, bool hasMEDS);
 		virtual ~PanelF6();
 
 		void DefineVC() override;
@@ -119,6 +119,8 @@ namespace vc
 		void OnPreStep(double simt, double simdt, double mjd) override;
 		void DefineVCAnimations();
 		void VisualCreated() override;
+
+		bool bHasMEDS = false;
 
 		UINT anim_adiR = -1, anim_adiP = -1, anim_adiY = -1;
 		MGROUP_TRANSFORM* mgr_adiR = nullptr, * mgr_adiP = nullptr, * mgr_adiY = nullptr;

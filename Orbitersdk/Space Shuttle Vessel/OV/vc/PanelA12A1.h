@@ -77,12 +77,14 @@ namespace vc
 			MDU* pCRT4;
 
 		public:
-			explicit PanelA12A1( Atlantis* _sts, bool defaultposition );
+			explicit PanelA12A1( Atlantis* _sts, bool defaultposition, bool hasMEDS );
 			virtual ~PanelA12A1();
 
 			void DefineVC() override;
 			void RegisterVC() override;
 			void Realize() override;
+
+			bool bHasMEDS = false;
 	};
 }
 

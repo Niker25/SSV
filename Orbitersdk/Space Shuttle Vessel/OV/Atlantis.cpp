@@ -184,6 +184,7 @@ Date         Developer
 2024/12/30   GLS
 2025/01/23   GLS
 2025/05/19   GLS
+2026/10/30   Niker
 ********************************************/
 // ==============================================================
 //                 ORBITER MODULE: Atlantis
@@ -451,6 +452,8 @@ DLLCLBK void InitModule( HINSTANCE hModule )
 		LoadAerodynamicData();
 
 		oapiWriteLog( "(SSV_OV) [INFO] Loading bitmaps..." );
+
+		//Load MED Bitmaps
 		g_Param.deu_characters = LOADBMP(IDB_DEUCHARACTERS);
 		HDC Temp1DC = CreateDC( "DISPLAY", NULL, NULL, NULL );
 		g_Param.DeuCharBitmapDC = CreateCompatibleDC( Temp1DC );
@@ -483,6 +486,40 @@ DLLCLBK void InitModule( HINSTANCE hModule )
 
 		g_Param.deu_characters_faultSH = oapiCreateSurface( LOADBMP(IDB_DEUCHARACTERSFAULT) );
 		if (g_Param.deu_characters_faultSH == NULL) throw std::exception( "Loading bitmap \"DEU_Raw_fault.bmp\" failed." );
+
+		//MCD Bitmaps
+		g_Param.deu_characters_mcd = LOADBMP(IDB_DEUCHARACTERS_MCD);
+		HDC Temp2DC = CreateDC("DISPLAY", NULL, NULL, NULL);
+		g_Param.DeuCharBitmapDC_MCD = CreateCompatibleDC(Temp2DC);
+		SelectObject(g_Param.DeuCharBitmapDC_MCD, g_Param.deu_characters_mcd);
+		SetStretchBltMode(g_Param.DeuCharBitmapDC_MCD, HALFTONE);
+		StretchBlt(g_Param.DeuCharBitmapDC_MCD, 0, 0, 284, 256, g_Param.DeuCharBitmapDC_MCD, 0, 0, 512, 512, SRCCOPY);
+		//DeleteDC( Temp2DC );
+
+		g_Param.deu_characters_overbright_mcd = LOADBMP(IDB_DEUCHARACTERSOVERBRIGHT_MCD);
+		//Temp2DC = CreateDC( "DISPLAY", NULL, NULL, NULL );
+		g_Param.DeuCharOvrBrgtBitmapDC_MCD = CreateCompatibleDC(Temp2DC);
+		SelectObject(g_Param.DeuCharOvrBrgtBitmapDC_MCD, g_Param.deu_characters_overbright_mcd);
+		SetStretchBltMode(g_Param.DeuCharOvrBrgtBitmapDC_MCD, HALFTONE);
+		StretchBlt(g_Param.DeuCharOvrBrgtBitmapDC_MCD, 0, 0, 284, 256, g_Param.DeuCharOvrBrgtBitmapDC_MCD, 0, 0, 512, 512, SRCCOPY);
+		//DeleteDC( Temp2DC );
+
+		g_Param.deu_characters_fault_mcd = LOADBMP(IDB_DEUCHARACTERSFAULT_MCD);
+		//Temp2DC = CreateDC( "DISPLAY", NULL, NULL, NULL );
+		g_Param.DeuCharFaultBitmapDC_MCD = CreateCompatibleDC(Temp2DC);
+		SelectObject(g_Param.DeuCharFaultBitmapDC_MCD, g_Param.deu_characters_fault_mcd);
+		SetStretchBltMode(g_Param.DeuCharOvrBrgtBitmapDC_MCD, HALFTONE);
+		StretchBlt(g_Param.DeuCharFaultBitmapDC_MCD, 0, 0, 284, 256, g_Param.DeuCharFaultBitmapDC_MCD, 0, 0, 512, 512, SRCCOPY);
+		DeleteDC(Temp2DC);
+
+		g_Param.deu_charactersSH_MCD = oapiCreateSurface(LOADBMP(IDB_DEUCHARACTERS_MCD));
+		if (g_Param.deu_charactersSH_MCD == NULL) throw std::exception("Loading bitmap \"DEU_Raw_MCD.bmp\" failed.");
+
+		g_Param.deu_characters_overbrightSH_MCD = oapiCreateSurface(LOADBMP(IDB_DEUCHARACTERSOVERBRIGHT_MCD));
+		if (g_Param.deu_characters_overbrightSH_MCD == NULL) throw std::exception("Loading bitmap \"DEU_Raw_overbright_MCD.bmp\" failed.");
+
+		g_Param.deu_characters_faultSH_MCD = oapiCreateSurface(LOADBMP(IDB_DEUCHARACTERSFAULT_MCD));
+		if (g_Param.deu_characters_faultSH_MCD == NULL) throw std::exception("Loading bitmap \"DEU_Raw_fault_MCD.bmp\" failed.");
 		return;
 	}
 	catch (std::exception &e)
@@ -501,6 +538,7 @@ DLLCLBK void ExitModule( HINSTANCE hModule )
 {
 	try
 	{
+		//MEDS
 		DeleteDC( g_Param.DeuCharBitmapDC );
 		if (g_Param.deu_characters)
 		{
@@ -532,6 +570,40 @@ DLLCLBK void ExitModule( HINSTANCE hModule )
 		if (g_Param.deu_characters_faultSH)
 		{
 			oapiDestroySurface( g_Param.deu_characters_faultSH );
+		}
+
+		//MCD
+		DeleteDC(g_Param.DeuCharBitmapDC_MCD);
+		if (g_Param.deu_characters_mcd)
+		{
+			DeleteObject(g_Param.deu_characters_mcd);
+		}
+
+		DeleteDC(g_Param.DeuCharOvrBrgtBitmapDC_MCD);
+		if (g_Param.deu_characters_overbright_mcd)
+		{
+			DeleteObject(g_Param.deu_characters_overbright_mcd);
+		}
+
+		DeleteDC(g_Param.DeuCharFaultBitmapDC_MCD);
+		if (g_Param.deu_characters_fault_mcd)
+		{
+			DeleteObject(g_Param.deu_characters_fault_mcd);
+		}
+
+		if (g_Param.deu_charactersSH_MCD)
+		{
+			oapiDestroySurface(g_Param.deu_charactersSH_MCD);
+		}
+
+		if (g_Param.deu_characters_overbrightSH_MCD)
+		{
+			oapiDestroySurface(g_Param.deu_characters_overbrightSH_MCD);
+		}
+
+		if (g_Param.deu_characters_faultSH_MCD)
+		{
+			oapiDestroySurface(g_Param.deu_characters_faultSH_MCD);
 		}
 	}
 	catch (std::exception &e)
@@ -5808,11 +5880,11 @@ void Atlantis::CreatePanels( void )
 	// F4
 	pgForward->AddPanel( new vc::PanelF4( this, pMission->HasDragChute() ) );
 	// F6
-	pgForward->AddPanel( new vc::PanelF6( this ) );
+	pgForward->AddPanel( new vc::PanelF6(this, pMission->HasMEDS()));
 	// F7
-	pgForward->AddPanel( new vc::PanelF7( this ) );
+	pgForward->AddPanel( new vc::PanelF7( this, pMission->HasMEDS()));
 	// F8
-	pgForward->AddPanel( new vc::PanelF8( this ) );
+	pgForward->AddPanel( new vc::PanelF8( this, pMission->HasMEDS()));
 	// F9
 	pgForward->AddPanel( new vc::PanelF9( this ) );
 	
@@ -5895,7 +5967,7 @@ void Atlantis::CreatePanels( void )
 	// A1R
 	pgAft->AddPanel( new vc::PanelA1R( this ) );
 	// AFD
-	pgAft->AddPanel( new vc::AftMDU( this ) );
+	pgAft->AddPanel( new vc::AftMDU( this, pMission->HasMEDS() ) );
 	// A2
 	pgAft->AddPanel( new vc::PanelA2( this ) );
 	// A3
@@ -5935,7 +6007,7 @@ void Atlantis::CreatePanels( void )
 	// R10
 	pgAftStbd->AddPanel( new vc::PanelR10( this ) );
 	// R11U
-	pgAftStbd->AddPanel( new vc::PanelA12A1( this, false ) );
+	pgAftStbd->AddPanel( new vc::PanelA12A1( this, false, pMission->HasMEDS() ) );
 	// R11L
 	pgAftStbd->AddPanel( new vc::PanelA12A2( this, false ) );
 	// R13U

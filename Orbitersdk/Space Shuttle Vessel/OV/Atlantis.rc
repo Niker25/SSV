@@ -27,6 +27,10 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 IDB_DEUCHARACTERS       BITMAP                  "Bitmaps\\DEU_Raw.bmp"
 IDB_DEUCHARACTERSOVERBRIGHT BITMAP                  "Bitmaps\\DEU_Raw_overbright.bmp"
 IDB_DEUCHARACTERSFAULT  BITMAP                  "Bitmaps\\DEU_Raw_fault.bmp"
+
+IDB_DEUCHARACTERS_MCD       BITMAP                  "Bitmaps\\DEU_Raw_MCD.bmp"
+IDB_DEUCHARACTERSOVERBRIGHT_MCD BITMAP                  "Bitmaps\\DEU_Raw_overbright_MCD.bmp"
+IDB_DEUCHARACTERSFAULT_MCD  BITMAP                  "Bitmaps\\DEU_Raw_fault_MCD.bmp"
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 

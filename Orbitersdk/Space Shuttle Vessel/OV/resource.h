@@ -6,6 +6,10 @@
 #define IDB_DEUCHARACTERSOVERBRIGHT     122
 #define IDB_DEUCHARACTERSFAULT          126
 
+#define IDB_DEUCHARACTERS_MCD               217
+#define IDB_DEUCHARACTERSOVERBRIGHT_MCD     222
+#define IDB_DEUCHARACTERSFAULT_MCD          226
+
 // Next default values for new objects
 //
 #ifdef APSTUDIO_INVOKED

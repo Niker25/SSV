@@ -411,6 +411,8 @@ namespace mission
 		bool GetChinPanel( void ) const;
 
 		const struct PLB_Cameras& GetPLB_Cameras( void ) const;
+
+		virtual bool HasMEDS(void) const;
 	};
 
 }

@@ -165,6 +165,7 @@ inline constexpr double BRAKE_RATE = 0.75;// 1/x seconds from detent to full def
 
 
 const static char* MESHNAME_VC = "SSV\\OV\\VC";
+const static char* MESHNAME_VC_MCD = "SSV\\OV\\VCmod";
 const static char* MESHNAME_VC_EXTERNAL = "SSV\\OV\\VC_external";
 const static char* MESHNAME_MIDDECK = "SSV\\OV\\MidDeck";
 const static char* MESHNAME_ORBITER = "SSV\\OV\\OV";
