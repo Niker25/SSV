@@ -308,12 +308,13 @@ namespace vc {
 				_V(-0.9395, 2.3122, 14.7566) + ofs, _V(-0.4259, 2.3122, 14.7566) + ofs,
 				_V(-0.9395, 2.0986, 14.6968) + ofs, _V(-0.4259, 2.0986, 14.6968) + ofs);
 		}
-		//else
-		//{
-		//	oapiVCRegisterArea(AID_F6, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED);
-		//	oapiVCSetAreaClickmode_Quadrilateral(AID_F6,
-		//		_V(-0.943685, 2.320348, 14.773584) + ofs, _V(-0.416913, 2.320348, 14.773584) + ofs,
-		//		_V(-0.943685, 1.951079, 14.674603) + ofs, _V(-0.416913, 1.951079, 14.674603) + ofs);
+		else
+		{
+			oapiVCRegisterArea(AID_F6, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED);
+			oapiVCSetAreaClickmode_Quadrilateral(AID_F6,
+				_V(-0.943685, 2.320348, 14.773584) + ofs, _V(-0.416913, 2.320348, 14.773584) + ofs,
+				_V(-0.943685, 1.951079, 14.674603) + ofs, _V(-0.416913, 1.951079, 14.674603) + ofs);
+		}
 
 		//	oapiVCRegisterArea(AID_F6_MDU, PANEL_REDRAW_NEVER, PANEL_MOUSE_LBDOWN | PANEL_MOUSE_LBUP | PANEL_MOUSE_LBPRESSED);
 		//	oapiVCSetAreaClickmode_Quadrilateral(AID_F6_MDU,
